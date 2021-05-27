@@ -86,6 +86,34 @@ sum(is.na(df_comp))
 
 write.csv(df_comp, file="liver_cancer.csv")
 
-bili <- round(1.8 + size/10 + alc/50 + packyears/50, digits=2)
+bili <- round(1.8 + chol/30 + size/5 + alc/100 + packyears/100, digits=2)
 bili
 range(bili)
+
+hist(chol[diet==1])
+hist(chol[diet==2])
+hist(chol[diet==3])
+
+cor(size, chol)
+plot(chol, size)
+
+cor(bmi, size)
+plot(bmi, size)
+
+cor(packyears, size)
+cor(alc, size)
+
+plot(packyears, size)
+plot(alc, size)
+
+plot(age, size)
+cor(age, size)
+
+plot(bili, size)
+cor(bili, size)
+
+model <- lm(size~age+chol+bmi)
+summary(model)
+
+model_2 <- lm(size~hbv+hcv+dia)
+summary(model_2)
