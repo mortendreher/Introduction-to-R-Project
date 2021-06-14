@@ -2,42 +2,53 @@
 
 # variables to be used: sex, age, bmi, size
 
-df <- read.csv("C:/Users/Morten Dreher/Desktop/DSM/DSM5/R/Project/Introduction-to-R-Project/liver_cancer.csv", header=TRUE)
+df_read <- read.csv("C:/Users/Morten Dreher/Desktop/DSM/DSM5/R/Project/Introduction-to-R-Project/liver_cancer.csv", header=TRUE)
+df[c(53,114,130,173),]
 
-distances <- function(id) {
+range(df$alc)
+summary(df$alc)
+View(df_read)
+range(df_read[,3])
+range(df$bili)
+library(dplyr)
+
+length(df_read[,1])
+df_read[2,40]
+typeof(df_read[40,3])
+df_read[40,3]
+
+distances <- function(df, id, vars, weights=rep.int(1,length(vars))) {
   distance_to_id <- numeric(length(df[,1]))
-  distance_to_id[id] <- Inf
+  distance_to_id[id] <- Inf # ensures that node itself will not be returned
   
-  for(i in (1:length(df[,1]))) {
-    if(df$X[i] != id) {
-      distance_to_id[i] = (abs(df$sex[i]-df$sex[id]) / (range(df$sex)[2]-range(df$sex)[1])) * 0.25
-      distance_to_id[i] = distance_to_id[i] + abs(df$age[i]-df$age[id]) / (range(df$age)[2]-range(df$age)[1])
-      distance_to_id[i] = distance_to_id[i] + (abs(df$bmi[i]-df$bmi[id]) / (range(df$bmi)[2]-range(df$bmi)[1])) * 1.5
-      distance_to_id[i] = distance_to_id[i] + abs(df$size[i]-df$size[id]) / (range(df$size)[2]-range(df$size)[1])
+  for(v in vars) {
+    for(i in (1:length(distance_to_id))) {
+      if(i != id) {
+        rng <- range(df[,v])
+        distance_to_id[i] = distance_to_id[i] + (abs(df[i,v]-df[id,v])/(rng[2]-rng[1]))*weights[which(vars==v)]
+      }
     }
-
   }
   return(distance_to_id)
 }
 
-knn <- function(id, k) {
-  distances <- distances(id)
-  neighbour_ids <- numeric(k)
-  neighbour_ids[1:k] <- -1
-  neighbours_filled <- 0
-  distances_sorted <- sort(distances, decreasing = FALSE)
-  
-  while(neighbours_filled < k) {
-    nodes <- which(distances == min(distances))
-    for (i in (1:length(nodes))) {
-      neighbour_ids[(length(neighbour_ids[neighbour_ids!=-1])+1)] <- nodes[i]
-    }
-    neighbours_filled <- neighbours_filled + length(nodes)
-    distances <- distances[distances != (min(distances))]
-  }
-  neighbour_ids <- neighbour_ids[1:k]
-  return(neighbour_ids)
+knn <- function(df, id, vars, k, weights) {
+  distances_to_id <- distances(df, id, vars, weights)
+  df_with_distances <- cbind(df, distances_to_id)
+  df_with_distances <- arrange(df_with_distances, df_with_distances$distances_to_id)
+  return(df_with_distances$X[1:k])
 }
+
+var <- c(2,3,6,13)
+w <- c(0.25,1,1.5,1)
+knn(df_read,id=50, vars=var, k=7, weights=w)
+
+distances(df_read, id=50,vars=var, weights=w)
+
+length(distances(df_read, id=50))
+meme <- cbind(df_read, distances(df_read, 50))
+View(meme)
+
 
 k <- c(3,5,7,9,11)
 
@@ -50,24 +61,40 @@ for(i in k) {
 
 # choose k=3
 
-sd(df$chol[knn(50,k)])
-mean(df$chol[knn(72,k)])
-mean(df$chol[knn(182,k)])
+sd(df$chol[knn(df, 50,k)])
+mean(df$chol[knn(df, 72,k)])
+mean(df$chol[knn(df, 182,k)])
 
-knn(50, 7)
-sort(distances(50))
-distances(50)[53]
-distances(50)[114]
-distances(50)[130]
-distances(50)[173]
-distances(50)[256]
+table_3 <- rbind(c(50, df$chol[knn(df,50,3)], mean(df$chol[knn(df,50,3)]), sd(df$chol[knn(df,50,3)])),
+                 c(72, df$chol[knn(df,72,3)], mean(df$chol[knn(df,72,3)]), sd(df$chol[knn(df,72,3)])),
+                 c(182, df$chol[knn(df,182,3)], mean(df$chol[knn(df,182,3)]), sd(df$chol[knn(df,182,3)]))
+                 )
 
-sort(distances(72)) 
-knn(72,5)
+knitr::kable(round(table_3, digits=2), col.names=c("ID of NA", "Neighbour 1", "Neighbour 2", "Neighbour 3", "Mean", "Sd"))
 
-sort(distances(182))
-knn(182, 5)
-distances(182)[30]
+table_5 <- rbind(c(50, df$chol[knn(df,50,5)], mean(df$chol[knn(df,50,5)]), sd(df$chol[knn(df,50,5)])),
+                 c(72, df$chol[knn(df,72,5)], mean(df$chol[knn(df,72,5)]), sd(df$chol[knn(df,72,5)])),
+                 c(182, df$chol[knn(df,182,5)], mean(df$chol[knn(df,182,5)]), sd(df$chol[knn(df,182,5)]))
+)
+
+knitr::kable(table_5, col.names=c("ID of NA", "Neighbour 1", "Neighbour 2", "Neighbour 3","Neighbour 4","Neighbour 5", "Mean", "Sd"))
+
+knn(df,50, 7)
+sort(distances(df,50))
+distances(df,50)[53]
+distances(df,50)[114]
+distances(df,50)[130]
+distances(df,50)[173]
+distances(df,50)[256]
+
+View(df)
+
+sort(distances(df,72)) 
+knn(df,72,5)
+
+sort(distances(df,182))
+knn(df,182, 5)
+distances(df,182)[30]
 
 # -------------------- 
 # PLOTS 
