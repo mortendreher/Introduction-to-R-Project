@@ -2,8 +2,16 @@
 
 # variables to be used: sex, age, bmi, size
 
-df_read <- read.csv("C:/Users/Morten Dreher/Desktop/DSM/DSM5/R/Project/Introduction-to-R-Project/liver_cancer.csv", header=TRUE)
+df_read <- read.csv("C:/Users//Desktop/DSM/DSM5/R/Project/Introduction-to-R-Project/liver_cancer.csv", header=TRUE)
 df[c(53,114,130,173),]
+
+if(Sys.info()[["user"]] == 'Morten Dreher'){
+  df_read <- read.csv("C:/Users//Desktop/DSM/DSM5/R/Project/Introduction-to-R-Project/liver_cancer.csv", header=TRUE)
+} else if(Sys.info()[["user"]] == 'Lars Andersen'){
+  df_read <- read.csv("C:/Users/Lars Andersen/Desktop/DSM/Semester 5/R shiny/project/Introduction-to-R-Project/liver_cancer.csv", header=TRUE)
+} else if(Sys.info()[["user"]] == 'Melita Coneva'){
+  df_read <- read.csv("C:/Users/Coneva/Desktop/ShinyApp/Introduction-to-R-Project/liver_cancer.csv", header=TRUE)
+}
 
 range(df$alc)
 summary(df$alc)
@@ -41,7 +49,9 @@ knn <- function(df, id, vars, k, weights) {
 
 var <- c(2,3,6,13)
 w <- c(0.25,1,1.5,1)
-knn(df_read,id=50, vars=var, k=7, weights=w)
+mean(df_read$chol[knn(df_read,id=50, vars=var, k=3, weights=w)])
+mean(df_read$chol[knn(df_read,id=72, vars=var, k=3, weights=w)])
+mean(df_read$chol[knn(df_read,id=182, vars=var, k=3, weights=w)])
 
 distances(df_read, id=50,vars=var, weights=w)
 
@@ -144,7 +154,7 @@ ggplot(data=df) + geom_histogram(mapping = aes(x=df[,xvar])) +
 
 # Summaries for metric variables
 
-summary_table<- t(as.numeric(summary(df[,xvar])))
+summary_table<- t(as.numeric(summary(df_read[,xvar])))
 knitr::kable(summary_table, col.names = c("Min", "Q1", "Median", "Mean", "Q3", "Max"))
 
 # Risks for two dichotomous variables
