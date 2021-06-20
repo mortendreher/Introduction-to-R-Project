@@ -1,6 +1,6 @@
 library(shiny)
 
-ui <- navbarPage("Liverpool",
+ui <- navbarPage("Liver cancer",
                 tabPanel("Team members", "By Melita Coneva, Morten Dreher and Lars Andersen"),
                 tabPanel("About liver cancer", 
                          p(h3("Overview"),"The liver is the central metabolism organ of the human body.", br(), 

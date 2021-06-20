@@ -75,7 +75,7 @@ server = function(input, output){
   })
   output$sum <- renderTable(
     expr <- rbind(c("Min", "Q1", "Median", "Mean", "Q3", "Max"),
-                  t(as.numeric(summary(as.numeric(unlist(df[colnames(df) == input$tab_sum])))))),
+                  round(t(as.numeric(summary(as.numeric(unlist(df[colnames(df) == input$tab_sum]))))), digits=2)),
     colnames = FALSE
   )
   output$freq <- renderTable({
