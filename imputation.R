@@ -6,7 +6,7 @@ df_read <- read.csv("C:/Users//Desktop/DSM/DSM5/R/Project/Introduction-to-R-Proj
 df[c(53,114,130,173),]
 
 if(Sys.info()[["user"]] == 'Morten Dreher'){
-  df_read <- read.csv("C:/Users//Desktop/DSM/DSM5/R/Project/Introduction-to-R-Project/liver_cancer.csv", header=TRUE)
+  df_read <- read.csv("C:/Users/Morten Dreher/Desktop/DSM/DSM5/R/Project/Introduction-to-R-Project/liver_cancer.csv", header=TRUE)
 } else if(Sys.info()[["user"]] == 'Lars Andersen'){
   df_read <- read.csv("C:/Users/Lars Andersen/Desktop/DSM/Semester 5/R shiny/project/Introduction-to-R-Project/liver_cancer.csv", header=TRUE)
 } else if(Sys.info()[["user"]] == 'Melita Coneva'){
@@ -177,3 +177,151 @@ right <- mean(df[,xvar]) + error
 conf_table <- round(c(alpha, left, mean(df[,xvar]), right, error), digits=2) # consider reevaluating digits
 
 knitr::kable(t(conf_table), col.names = c("Alpha", "Lower limit", "Mean", "Upper limit", "Standard error"))
+
+
+# SIMS
+
+df_read <- read.csv("C:/Users/Morten Dreher/Desktop/DSM/DSM5/R/Project/Introduction-to-R-Project/liver_cancer.csv", header=TRUE)
+
+range(df_read$size)
+range(df_read$bili)
+range(df_read$alc)
+range(df_read$packyears)
+range(df_read$bmi)
+
+# variables to simulate: weight (-> bmi), chol, packyears, size, bili
+# additional vars: alive -> y, n, c (alc, packyears, age, bili, size, dia)
+# censored: size, bmi 
+
+prob_vec <- df_read$age*0.0001 + df_read$size*0.005 + df_read$bili*0.00001 + df_read$alc*0.0001 + df_read$packyears*0.0001 + df_read$dia*0.005 
+
+range(prob_vec)
+hist(prob_vec)
+alive <- rbinom(n=300, size=1, prob = 1-prob_vec)
+
+alive[alive==1] <- 'y'
+alive[alive==0] <- 'n'
+
+length(alive[alive=='y'])
+
+cens_vec <- df_read$size*0.002 + (max(df_read$bmi) - df_read$bmi)*0.001
+
+cens <- rbinom(n=300, size=1, prob = 1-cens_vec)
+sum(cens)
+
+alive[alive=='y' & cens==0] <- 'c'
+alive
+
+length(alive[alive=='y'])
+
+
+# SIMS based on past values
+
+# weight
+
+test_weight <- df_read$weight[alive=='y'] + rnorm(n=length(df_read$weight[alive=='y']), mean=-0.6, sd=0.5)
+hist(df_read$weight[alive=='y']-test_weight)
+
+test_weight_big <- matrix(nrow=300,ncol=12)
+View(test_weight_big)
+test_weight_big[1:300] <- df_read$weight
+
+for (i in (1:11)) {
+  test_weight_big[,i+1] <- sim_weight(test_weight_big[,i])
+}
+
+sim_weight <- function(weight) {
+  return(weight + rnorm(n=length(weight), mean=-0.6, sd=0.5))
+}
+
+plot(test_weight_big[1,], type="l", ylim=c(50,100))
+for(i in(2:300)) {
+  lines(test_weight_big[i,])
+  
+}
+
+# size
+
+test_size <- df_read$size + runif(n=300, min=-0.01, max=+0.05)
+test_size_big <- matrix(nrow=300,ncol=12)
+
+hist(df_read$size - test_size)
+
+sim_size <- function(size) {
+  return(size+runif(n=300, min=-0.01, max=+0.05))
+}
+
+test_size_big[,1] <- df_read$size
+
+for(i in (1:11)) {
+  test_size_big[,i+1] <- sim_size(test_size_big[,i])
+}
+
+plot(test_size_big[1,], type="l", ylim=c(0,6))
+for(i in(2:300)) {
+  lines(test_size_big[i,])
+}
+
+# chol 
+
+test_chol_big <- matrix(nrow=300, ncol=12)
+
+sim_chol <- function(chol) {
+  return(chol + (((bmi-mean(bmi))*0.5)*rnorm(n=length(chol), mean=0, sd=0.2)))
+}
+
+test_chol_big[,1] <- df_read$chol
+
+for(i in (1:11)) {
+  test_chol_big[,i+1] <- sim_chol(test_chol_big[,i])
+}
+
+plot(test_chol_big[1,], type="l", ylim=c(130,290))
+for(i in(2:300)) {
+  lines(test_chol_big[i,])
+}
+
+# BMI 
+
+height_big <- matrix(nrow=300, ncol=12)
+height_big[,(1:12)] <- df_read$height
+View(height_big)
+
+bmi_big <- round(test_weight_big / ((height_big/100)^2), digits=1)
+
+plot(bmi_big[1,], type="l", ylim=c(10,30))
+for(i in(2:30)) {
+  lines(bmi_big[i,])
+  
+}
+
+# packyears
+
+packyears_big <- matrix(nrow=300, ncol=12)
+packyears_big[,1] <- df_read$packyears
+
+for(i in(2:12)) {
+  packyears_big[,i] <- packyears_big[,(i-1)] + df_read$cigs_per_day/(20*12)
+  
+}
+
+plot(packyears_big[2,], type="l")
+
+for(i in (2:300)) {
+  lines(packyears_big[i,])
+}
+
+# bili 
+
+bili_big <- matrix(nrow=300, ncol=12)
+
+for(i in(2:12)) {
+  bili_big[,i] <- round(1.8 + df_read$chol/30 + df_read$size/5 + df_read$alc/100 + df_read$packyears/100, digits=2) +
+    rnorm(n=300, mean=.1, sd=.3)
+
+}
+
+plot(bili_big[1,], type="l", ylim=c(7, 15))
+for(i in (2:300)){
+  lines(bili_big[i,])
+}
