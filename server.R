@@ -14,7 +14,7 @@ server = function(input, output){
              y=colnames(df[colnames(df) == input$scat_var_y]))
     }else{
     ggplot(data=df, mapping=aes(x=as.numeric(unlist(df[colnames(df) == input$scat_var_x])), y=as.numeric(unlist(df[colnames(df) == input$scat_var_y])))) +
-      geom_point(mapping=aes(colour=as.numeric(unlist(df[colnames(df) == input$scat_var_group])))) + 
+      geom_point(mapping=aes(colour=as.character(unlist(df[colnames(df) == input$scat_var_group])))) + 
       labs(title=paste0("Variables ", colnames(df[colnames(df) == input$scat_var_x]) , " and ",
                         colnames(df[colnames(df) == input$scat_var_y]), " grouped by ",
                         colnames(df[colnames(df) == input$scat_var_group])),
@@ -28,8 +28,8 @@ server = function(input, output){
         labs(title=paste0("Variables ", colnames(df[colnames(df) == input$box_var_x])),
              x=colnames(df[colnames(df) == input$box_var_x]))
     }else{
-    ggplot(data=df) + geom_boxplot(mapping = aes(x = as.numeric(unlist(df[colnames(df) == input$box_var_x])), y=as.numeric(unlist(df[colnames(df) == input$box_var_group])),
-                                                 group=as.numeric(unlist(df[colnames(df) == input$box_var_group])))) + 
+    ggplot(data=df) + geom_boxplot(mapping = aes(x = as.numeric(unlist(df[colnames(df) == input$box_var_x])), y=as.character(unlist(df[colnames(df) == input$box_var_group])),
+                                                 group=as.character(unlist(df[colnames(df) == input$box_var_group])))) + 
       labs(title=paste0("Variables ", colnames(df[colnames(df) == input$box_var_x]) , " and ",
                         colnames(df[colnames(df) == input$box_var_group])),
            x=colnames(df[colnames(df) == input$box_var_x]), 
