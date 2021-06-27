@@ -89,8 +89,8 @@ ui <- navbarPage("Liver cancer",
                          fluidRow(h2("Frequencies"),
                                   column(2, selectInput(inputId = 'tab_freq_1', ' Choose a categorical variable',
                                                         choices =
-                                                          c( 'None', 'Sex' = 'sex', 'Diet' = 'diet', 'Smoker' = 'smoker',
-                                                             'Hepatitis B' = 'hbv', 'Hepatitis C' = 'hcv', 'Diabetes' = 'dia'), selected = 'None')),
+                                                          c('Sex' = 'sex', 'Diet' = 'diet', 'Smoker' = 'smoker',
+                                                             'Hepatitis B' = 'hbv', 'Hepatitis C' = 'hcv', 'Diabetes' = 'dia'), selected = 'Diet')),
                                   column(2, selectInput(inputId = 'tab_freq_2', ' Choose a categorical variable',
                                                         choices =
                                                           c( 'None', 'Sex' = 'sex', 'Diet' = 'diet', 'Smoker' = 'smoker',
@@ -100,12 +100,12 @@ ui <- navbarPage("Liver cancer",
                          fluidRow(h2("Risks"),
                                   column(2, selectInput(inputId = 'tab_risk_1', ' Choose a categorical variable',
                                                         choices =
-                                                          c( 'None', 'Sex' = 'sex', 'Diet' = 'diet', 'Smoker' = 'smoker',
-                                                             'Hepatitis B' = 'hbv', 'Hepatitis C' = 'hcv', 'Diabetes' = 'dia'), selected = 'None')),
+                                                          c( 'Sex' = 'sex', 'Diet' = 'diet', 'Smoker' = 'smoker',
+                                                             'Hepatitis B' = 'hbv', 'Hepatitis C' = 'hcv', 'Diabetes' = 'dia'), selected = 'Sex')),
                                   column(2, selectInput(inputId = 'tab_risk_2', ' Choose a categorical variable',
                                                         choices =
-                                                          c( 'None', 'Sex' = 'sex', 'Diet' = 'diet', 'Smoker' = 'smoker',
-                                                             'Hepatitis B' = 'hbv', 'Hepatitis C' = 'hcv', 'Diabetes' = 'dia'), selected = 'None')),
+                                                          c( 'Sex' = 'sex', 'Diet' = 'diet', 'Smoker' = 'smoker',
+                                                             'Hepatitis B' = 'hbv', 'Hepatitis C' = 'hcv', 'Diabetes' = 'dia'), selected = 'Diet')),
                                   column(6, offset = 2, tableOutput("risk"))
                                   )
                          # fluidRow(h2("Confidence Intervalls"),

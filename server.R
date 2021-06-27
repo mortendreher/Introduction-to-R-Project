@@ -1,6 +1,8 @@
 library(shiny)
-library(dplyr)
+library(tidyverse)
 library(ggplot2)
+library(survminer)
+library(gmodels)
 
 server = function(input, output){
   df <- read.csv("liver_cancer.csv", header=TRUE)
@@ -48,11 +50,19 @@ server = function(input, output){
   #   knitr::kable(summary_table, col.names = c("Min", "Q1", "Median", "Mean", "Q3", "Max"))
   # })
   freq <- reactive(
-    (table(as.numeric(unlist(df[colnames(df) == input$tab_freq_1])), as.numeric(unlist(df[colnames(df) == input$tab_freq_2]))))
-   )
-  # risk <- reactive({
-  #   (table(as.numeric(unlist(df[colnames(df) == input$tab_risk_1])), as.numeric(unlist(df[colnames(df) == input$tab_risk_2]))))
-  # })
+    if(input$tab_freq_2=='None') {
+      select(df, input$tab_freq_1)
+    }
+    else {
+      select(df, input$tab_freq_1, input$tab_freq_2)
+    }
+    )
+  risk <- reactive({
+     select(df, input$tab_risk_1, input$tab_risk_2)
+
+     
+     
+     })
   # ci <- reactive({
   #   error <- qt(p=1-(input$slider_ci/2), df=length(as.numeric(unlist(df[colnames(df) == input$tab_ci])))-1)*
   #     (sd(as.numeric(unlist(df[colnames(df) == input$tab_ci]))))/sqrt(length(as.numeric(unlist(df[colnames(df) == input$tab_ci]))))
@@ -79,16 +89,37 @@ server = function(input, output){
     colnames = FALSE
   )
   output$freq <- renderTable({
-    freq()
+     x <- as.data.frame(table(freq()))
+     if(length(x) < 3) {
+       names(x) = c(input$tab_freq_1, "Freq")
+     }
+     else {
+       names(x) = c(input$tab_freq_1, input$tab_freq_2, "Freq")
+     }
+     expr <- (x)
   })
-  output$risk <- renderTable(
-    # expr <- rbind(c(input$tab_risk_1, input$tab_risk_2),
-    #               ftable(as.character(unlist(df[colnames(df) == input$tab_risk_1])), as.character(unlist(df[colnames(df) == input$tab_risk_2])))),
-    #               colnames = FALSE
+  output$risk <- renderTable({
+    risk_df <- risk()
     
-    table(as.character(unlist(df[colnames(df) == input$tab_risk_1])),
-          as.character(unlist(df[colnames(df) == input$tab_risk_2])))
-  )
+    if(length(risk_df) > 1) { 
+      unique1 <- sort((unique(risk_df[,1])))
+      unique2 <- sort((unique(risk_df[,2])))
+      m <- matrix(0,nrow=length(unique1), ncol=length(unique2)+1, dimnames=list(a=unique1, b=c("",unique2)))
+      m <- data.frame(m,row.names = unique1)
+      m[,1] <- (unique1)
+      for(i in (1:length(unique1))) {
+        
+        for(j in (2:(length(unique2)+1))) { 
+          
+          m[i,j] <- (sum(risk_df[,1]==unique1[i] & risk_df[,2]==unique2[j-1]))
+          
+          }
+        
+      }
+    }
+    colnames(m) <- c(" ", unique2)
+    format.data.frame(m, digits=0)
+  })
   # output$ci <- renderTable(
   #   ci()
   # )
