@@ -96,11 +96,11 @@ server = function(input, output, session){
   output$histo <- renderPlot({
     histo()
   })
-  output$sum <- renderTable(
-    expr <- rbind(c("Min", "Q1", "Median", "Mean", "Q3", "Max"),
-                  round(t(as.numeric(summary(as.numeric(unlist(df[colnames(df) == input$tab_sum]))))), digits=2)),
-    colnames = FALSE
-  )
+  output$sum <- renderTable({
+    expr <- rbind(round(t(as.numeric(summary(as.numeric(unlist(df[colnames(df) == input$tab_sum]))))), digits=2))
+    colnames(expr) <- c("Min", "Q1", "Median", "Mean", "Q3", "Max")
+    expr
+     })
   output$freq <- renderTable({
      x <- as.data.frame(table(freq()))
      if(length(x) < 3) {
@@ -143,8 +143,7 @@ server = function(input, output, session){
       error <- qt(p=1-(alpha/2), df=length(ci_var)-1)*(sd(ci_var))/sqrt(length(ci_var))
       left <- mean(ci_var) - error
       right <- mean(ci_var) + error
-      tab <- rbind(
-                  round(c(alpha, left, mean(ci_var), right, error),
+      tab <- rbind(round(c(alpha, left, mean(ci_var), right, error),
                         digits=4))
       colnames(tab) <- c("Alpha", "Lower limit", "Mean", "Upper limit", "Standard error")
       tab
