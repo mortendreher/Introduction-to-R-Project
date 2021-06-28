@@ -143,10 +143,11 @@ server = function(input, output, session){
       error <- qt(p=1-(alpha/2), df=length(ci_var)-1)*(sd(ci_var))/sqrt(length(ci_var))
       left <- mean(ci_var) - error
       right <- mean(ci_var) + error
-      tab <- rbind(c("Alpha", "Lower limit", "Mean", "Upper limit", "Standard error"),
+      tab <- rbind(
                   round(c(alpha, left, mean(ci_var), right, error),
                         digits=4))
-      tab 
-      
+      colnames(tab) <- c("Alpha", "Lower limit", "Mean", "Upper limit", "Standard error")
+      tab
   })
+  
 }
