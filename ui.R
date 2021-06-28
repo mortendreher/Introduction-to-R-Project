@@ -37,16 +37,27 @@ ui <- navbarPage("Liver cancer",
                                )
                              )
                          ),
+                tabPanel("Dataset", fluidRow(h2("Dataset")), 
+                         column(2,checkboxInput(inputId='c_all', 'Select all',value = TRUE),
+                         checkboxGroupInput(inputId='c_vars', label="Select variables", 
+                                            choices = c('Sex (0=w, 1=m)'='sex', 'Age' = 'age','Height' = 'height', 'Weight' = 'weight', 'BMI' = 'bmi', 
+                                                        'Diet'='diet','Cholesterol'='chol', 'Smoker'='smoker', 'Cigarettes per day' = 'cigs_per_day', 'Packyears' = 'packyears',
+                                                        'Alcohol (g/day)'= 'alc','Tumour size' = 'size', 'Bilirubin' = 'bili', 'Hepatitis B' = 'hbv', 'Hepatitis C' = 'hcv', 'Diabetes' = 'dia')
+                                            , selected = c('age','sex','height','weight','bmi','diet','smoker','cigs_per_day', 'packyears', 'alc', 'size', 'bili', 'hbv', 'hcv','dia', 'chol')),
+                         ),
+                         column(10,dataTableOutput(outputId='out_dataset'))
+                         
+                         ),
                 tabPanel("Graphs",
                          fluidRow(h2("Scatterplot"),
                            column(2, selectInput(inputId = 'scat_var_x', 'Choose variable for x', 
                                                  choices =
-                                                 c('Age' = 'age','Height' = 'height', 'Weight' = 'weight', 'BMI' = 'bmi',
+                                                 c('Age' = 'age','Height' = 'height', 'Weight' = 'weight', 'BMI' = 'bmi', 'Cholesterol'='chol',
                                                   'Cigarettes per day' = 'cigs_per_day', 'Packyears' = 'packyears',
                                                   'Alcohol (g/day)'= 'alc','Tumour size' = 'size', 'Bilirubin' = 'bili'), selected = 'bili')),
                            column(2, selectInput(inputId = 'scat_var_y', 'Choose variable for y',
                                                  choices =
-                                                   c('Age' = 'age','Height' = 'height', 'Weight' = 'weight', 'BMI' = 'bmi',
+                                                   c('Age' = 'age','Height' = 'height', 'Weight' = 'weight', 'BMI' = 'bmi', 'Cholesterol'='chol',
                                                      'Cigarettes per day' = 'cigs_per_day', 'Packyears' = 'packyears',
                                                      'Alcohol (g/day)'= 'alc','Tumour size' = 'size', 'Bilirubin' = 'bili'), selected = 'size')),
                            column(2, selectInput(inputId = 'scat_var_group', 'Choose grouping variable',
@@ -58,7 +69,7 @@ ui <- navbarPage("Liver cancer",
                          fluidRow(h2("Boxplot"),
                                   column(2, selectInput(inputId = 'box_var_x', 'Choose variable for x', 
                                                         choices =
-                                                          c('Age' = 'age','Height' = 'height', 'Weight' = 'weight', 'BMI' = 'bmi',
+                                                          c('Age' = 'age','Height' = 'height', 'Weight' = 'weight', 'BMI' = 'bmi', 'Cholesterol'='chol',
                                                             'Cigarettes per day' = 'cigs_per_day', 'Packyears' = 'packyears',
                                                             'Alcohol (g/day)'= 'alc','Tumour size' = 'size', 'Bilirubin' = 'bili'), selected = 'bili')),
                                   column(2, selectInput(inputId = 'box_var_group', 'Choose grouping variable',
@@ -70,7 +81,7 @@ ui <- navbarPage("Liver cancer",
                          fluidRow(h2("Histogram"),
                                   column(2, selectInput(inputId = 'histo_var_x', 'Choose variable for x', 
                                                         choices =
-                                                          c('Age' = 'age','Height' = 'height', 'Weight' = 'weight', 'BMI' = 'bmi',
+                                                          c('Age' = 'age','Height' = 'height', 'Weight' = 'weight', 'BMI' = 'bmi', 'Cholesterol'='chol',
                                                             'Cigarettes per day' = 'cigs_per_day', 'Packyears' = 'packyears',
                                                             'Alcohol (g/day)'= 'alc','Tumour size' = 'size', 'Bilirubin' = 'bili'), selected = 'bili')),
                                   column(6, offset = 4, plotOutput("histo"))
@@ -80,7 +91,7 @@ ui <- navbarPage("Liver cancer",
                          fluidRow(h2("Summaries"),
                                   column(2, selectInput(inputId = 'tab_sum', 'Choose a metric variable',
                                                         choices = 
-                                                          c('Age' = 'age','Height' = 'height', 'Weight' = 'weight', 'BMI' = 'bmi',
+                                                          c('Age' = 'age','Height' = 'height', 'Weight' = 'weight', 'BMI' = 'bmi', 'Cholesterol'='chol',
                                                             'Cigarettes per day' = 'cigs_per_day', 'Packyears' = 'packyears',
                                                             'Alcohol (g/day)'= 'alc','Tumour size' = 'size', 'Bilirubin' = 'bili'), selected = 'bili')
                                                           ),
@@ -100,23 +111,24 @@ ui <- navbarPage("Liver cancer",
                          fluidRow(h2("Risks"),
                                   column(2, selectInput(inputId = 'tab_risk_1', ' Choose a categorical variable',
                                                         choices =
-                                                          c( 'Sex' = 'sex', 'Diet' = 'diet', 'Smoker' = 'smoker',
+                                                          c( 'Sex' = 'sex', 'Smoker' = 'smoker',
                                                              'Hepatitis B' = 'hbv', 'Hepatitis C' = 'hcv', 'Diabetes' = 'dia'), selected = 'Sex')),
                                   column(2, selectInput(inputId = 'tab_risk_2', ' Choose a categorical variable',
                                                         choices =
-                                                          c( 'Sex' = 'sex', 'Diet' = 'diet', 'Smoker' = 'smoker',
-                                                             'Hepatitis B' = 'hbv', 'Hepatitis C' = 'hcv', 'Diabetes' = 'dia'), selected = 'Diet')),
+                                                          c( 'Sex' = 'sex', 'Smoker' = 'smoker',
+                                                             'Hepatitis B' = 'hbv', 'Hepatitis C' = 'hcv', 'Diabetes' = 'dia'), selected = 'hbv')),
                                   column(6, offset = 2, tableOutput("risk"))
-                                  )
-                         # fluidRow(h2("Confidence Intervalls"),
-                         #          column(2, selectInput(inputId = 'tab_ci', 'Choose a metric variable',
-                         #                                choices =
-                         #                                  c('Age' = 'age','Height' = 'height', 'Weight' = 'weight', 'BMI' = 'bmi',
-                         #                                    'Cigarettes per day' = 'cigs_per_day', 'Packyears' = 'packyears',
-                         #                                    'Alcohol (g/day)'= 'alc','Tumour size' = 'size', 'Bilirubin' = 'bili'), selected = 'bili')
-                         #                                  ),
-                         #          column(2, sliderInput(inputId = 'slider_ci', ' Choose alpha',
-                         #                                value = 0.05, min = 0, max = 1, step = 0.005)),
-                         #          column(6, offset = 2, tableOutput("ci"))
+                                  ),
+                         fluidRow(h2("Confidence Intervalls"),
+                                  column(2, selectInput(inputId = 'tab_ci', 'Choose a metric variable',
+                                                        choices =
+                                                          c('Age' = 'age','Height' = 'height', 'Weight' = 'weight', 'BMI' = 'bmi', 'Cholesterol'='chol',
+                                                            'Cigarettes per day' = 'cigs_per_day', 'Packyears' = 'packyears',
+                                                            'Alcohol (g/day)'= 'alc','Tumour size' = 'size', 'Bilirubin' = 'bili'), selected = 'bili')
+                                                          ),
+                                  column(2, sliderInput(inputId = 'slider_ci', ' Choose alpha',
+                                                        value = 0.05, min = 0, max = 1, step = 0.005)),
+                                  column(6, offset = 2, tableOutput("ci"))
                          )
+)
 )
