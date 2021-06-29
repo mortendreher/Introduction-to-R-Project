@@ -3,6 +3,7 @@ library(tidyverse)
 library(ggplot2)
 library(survminer)
 library(gmodels)
+library(knitr)
 
 server = function(input, output, session){
   df <- read.csv("liver_cancer.csv", header=TRUE)
@@ -135,7 +136,6 @@ server = function(input, output, session){
       names(m) = c(input$tab_risk_1, "Freq")
     }
    
-    m
   })
   output$ci <- renderTable({
       ci_var <- as.numeric(unlist(ci_out()))
