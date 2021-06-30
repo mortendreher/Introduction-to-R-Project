@@ -135,7 +135,7 @@ server = function(input, output, session){
       m <- as.data.frame(table(risk()))
       names(m) = c(input$tab_risk_1, "Freq")
     }
-   
+   m
   })
   output$ci <- renderTable({
       ci_var <- as.numeric(unlist(ci_out()))
