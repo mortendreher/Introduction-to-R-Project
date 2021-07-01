@@ -86,7 +86,7 @@ server = function(input, output, session){
     select(df, input$tab_ci)
   })
   get_alpha <- reactive(
-    input$slider_ci
+    (1-input$slider_ci)
   )
   output$scatter <- renderPlot({
     scatter()
