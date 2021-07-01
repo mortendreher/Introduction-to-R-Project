@@ -99,7 +99,7 @@ ui <- navbarPage("Liver cancer",
                                                             'Alcohol (g/day)'= 'alc','Tumour size' = 'size', 'Bilirubin' = 'bili'), selected = 'bili')
                                                           ),
                                   column(2, sliderInput(inputId = 'slider_ci', ' Choose CI percentage',
-                                                        value = 0.95, min = 0, max = 1, step = 0.005)),
+                                                        value = 0.95, min = 0, max = 1, step = 0.01)),
                                   column(6, offset = 2, tableOutput("ci"))
                          )
 )
