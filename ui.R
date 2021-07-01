@@ -1,15 +1,16 @@
 library(shiny)
 library(knitr)
+library(shinythemes)
 
 rmdfiles <- c("about_liver.rmd")
 sapply(rmdfiles, knit, quiet = T)
 
-ui <- navbarPage("Liver cancer",
-                tabPanel("Team members", "By Melita Coneva, Morten Dreher and Lars Andersen"),
-                tabPanel("About liver cancer",
+ui <- navbarPage(theme = shinytheme("slate"),"Liver cancer",
+                tabPanel("Team members", "By Melita Coneva, Morten Dreher and Lars Andersen",icon = icon("users")),
+                tabPanel("About liver cancer",icon = icon("info"),
                          withMathJax(includeMarkdown("about_liver.md"))
                          ),
-                tabPanel("Dataset", fluidRow(h2("Dataset")), 
+                tabPanel("Dataset",icon = icon("list-alt"), fluidRow(h2("Dataset")), 
                          column(2,checkboxInput(inputId='c_all', 'Select all',value = TRUE),
                          checkboxGroupInput(inputId='c_vars', label="Select variables", 
                                             choices = c('Sex (0=w, 1=m)'='sex', 'Age' = 'age','Height' = 'height', 'Weight' = 'weight', 'BMI' = 'bmi', 
@@ -20,7 +21,7 @@ ui <- navbarPage("Liver cancer",
                          column(10,dataTableOutput(outputId='out_dataset'))
                          
                          ),
-                tabPanel("Graphs",
+                tabPanel("Graphs",icon = icon("bar-chart-o"),
                          fluidRow(h2("Scatterplot"),
                            column(2, selectInput(inputId = 'scat_var_x', 'Choose variable for x', 
                                                  choices =
@@ -59,7 +60,7 @@ ui <- navbarPage("Liver cancer",
                                   column(6, offset = 4, plotOutput("histo"))
                          ),
                 ),
-                tabPanel("Tables",
+                tabPanel("Tables",icon = icon("table"),
                          fluidRow(h2("Summaries"),
                                   column(2, selectInput(inputId = 'tab_sum', 'Choose a metric variable',
                                                         choices = 

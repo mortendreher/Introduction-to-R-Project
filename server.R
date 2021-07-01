@@ -26,41 +26,45 @@ server = function(input, output, session){
   scatter <- reactive(
     if(input$scat_var_group == 'None'){
       ggplot(data=df, mapping=aes(x=as.numeric(unlist(df[colnames(df) == input$scat_var_x])), y=as.numeric(unlist(df[colnames(df) == input$scat_var_y])))) +
-        geom_point() +
+        geom_point(colour="steelblue",size=2) +
+        #stat_smooth(method = "lm", 
+        #           col = "#D3D3D3",
+        #          se = FALSE,
+        #         size = 0.8)+
         labs(title=paste0("Variables ", colnames(df[colnames(df) == input$scat_var_x]) , " and ",
                           colnames(df[colnames(df) == input$scat_var_y])),
              x=colnames(df[colnames(df) == input$scat_var_x]), 
-             y=colnames(df[colnames(df) == input$scat_var_y]))
+             y=colnames(df[colnames(df) == input$scat_var_y])) + theme_gray()
     }else{
     ggplot(data=df, mapping=aes(x=as.numeric(unlist(df[colnames(df) == input$scat_var_x])), y=as.numeric(unlist(df[colnames(df) == input$scat_var_y])))) +
-      geom_point(mapping=aes(colour=as.character(unlist(df[colnames(df) == input$scat_var_group])))) + 
+      geom_point(mapping=aes(colour=as.character(unlist(df[colnames(df) == input$scat_var_group]))),size=2)+
       labs(title=paste0("Variables ", colnames(df[colnames(df) == input$scat_var_x]) , " and ",
                         colnames(df[colnames(df) == input$scat_var_y]), " grouped by ",
                         colnames(df[colnames(df) == input$scat_var_group])),
                         x=colnames(df[colnames(df) == input$scat_var_x]), 
-           y=colnames(df[colnames(df) == input$scat_var_y]), colour=colnames(df[colnames(df) == input$scat_var_group]))
+           y=colnames(df[colnames(df) == input$scat_var_y]), colour=colnames(df[colnames(df) == input$scat_var_group])) + theme_gray()
     }
   )
   box <- reactive(
     if(input$box_var_group == 'None'){
-      ggplot(data=df) + geom_boxplot(mapping = aes(x = as.numeric(unlist(df[colnames(df) == input$box_var_x])))) + 
+      ggplot(data=df) + geom_boxplot(mapping = aes(x = as.numeric(unlist(df[colnames(df) == input$box_var_x]))),fill="steelblue") +
         labs(title=paste0("Variable ", colnames(df[colnames(df) == input$box_var_x])),
-             x=colnames(df[colnames(df) == input$box_var_x]))
+             x=colnames(df[colnames(df) == input$box_var_x])) +  theme_minimal()
     }else{
     ggplot(data=df) + geom_boxplot(mapping = aes(x = as.numeric(unlist(df[colnames(df) == input$box_var_x])), y=as.character(unlist(df[colnames(df) == input$box_var_group])),
-                                                 group=as.character(unlist(df[colnames(df) == input$box_var_group])))) + 
+                                                 group=as.character(unlist(df[colnames(df) == input$box_var_group]))),fill="steelblue") +   #fill=colnames(df[colnames(df) == input$scat_var_group]) didn't work
       labs(title=paste0("Variables ", colnames(df[colnames(df) == input$box_var_x]) , " and ",
                         colnames(df[colnames(df) == input$box_var_group])),
            x=colnames(df[colnames(df) == input$box_var_x]), 
-           y=colnames(df[colnames(df) == input$box_var_group]))
+           y=colnames(df[colnames(df) == input$box_var_group])) +theme_minimal()
     } 
   )
   histo <- reactive(
-    ggplot(data=df) + geom_histogram(mapping = aes(x=as.numeric(unlist(df[colnames(df) == input$histo_var_x])))) +
+    ggplot(data=df) + geom_histogram(mapping = aes(x=as.numeric(unlist(df[colnames(df) == input$histo_var_x]))),colour ="black", fill="steelblue") +
       labs(title=paste0("Histogram of variable ", colnames(df[colnames(df) == input$histo_var_x])),
            x=colnames(df[colnames(df) == input$histo_var_x]), 
-           y="Frequency")
-    
+           y="Frequency")+ theme_minimal()
+
   )
   # sum <- reactive({
   #   summary_table <- t(as.numeric(summary(as.numeric(unlist(df[colnames(df) == input$tab_sum])))))
