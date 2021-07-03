@@ -4,6 +4,7 @@ library(ggplot2)
 library(survminer)
 library(gmodels)
 library(knitr)
+library(plotly)
 source("global.R")
 
 server = function(input, output, session){
@@ -28,9 +29,9 @@ server = function(input, output, session){
   output$out_dataset <- renderDataTable(
     dataset()
   )
-  scatter <- reactive(
-    if(input$scat_var_group == 'None'){
-      ggplot(data=df, mapping=aes(x=get(input$scat_var_x), y=get(input$scat_var_y))) +
+  scatter <- reactive({
+    plot <- if(input$scat_var_group == 'None'){
+        ggplot(data=df, mapping=aes(x=get(input$scat_var_x), y=get(input$scat_var_y))) +
         geom_point(colour="steelblue",size=2) +
         #stat_smooth(method = "lm", 
         #           col = "#D3D3D3",
@@ -40,18 +41,19 @@ server = function(input, output, session){
                           colnames(df[colnames(df) == input$scat_var_y])),
              x=colnames(df[colnames(df) == input$scat_var_x]), 
              y=colnames(df[colnames(df) == input$scat_var_y])) + theme_gray()
-    }else{
-    ggplot(data=df, mapping=aes(x= get(input$scat_var_x), y=get(input$scat_var_y))) +
-      geom_point(mapping=aes(colour=unlist_as_char(input$scat_var_group, df)),size=2)+
-      labs(title=paste0("Variables ", colnames(df[colnames(df) == input$scat_var_x]) , " and ",
+     }else{
+      ggplot(data=df, mapping=aes(x= get(input$scat_var_x), y=get(input$scat_var_y))) +
+        geom_point(mapping=aes(colour=unlist_as_char(input$scat_var_group, df)),size=2)+
+        labs(title=paste0("Variables ", colnames(df[colnames(df) == input$scat_var_x]) , " and ",
                         colnames(df[colnames(df) == input$scat_var_y]), " grouped by ",
                         colnames(df[colnames(df) == input$scat_var_group])),
                         x=colnames(df[colnames(df) == input$scat_var_x]), 
                         y=colnames(df[colnames(df) == input$scat_var_y]),
                         colour=colnames(df[colnames(df) == input$scat_var_group])) +
         theme_gray()
-    }
-  )
+     }
+  ggplotly(plot)
+  })
   box <- reactive(
     if(input$box_var_group == 'None'){
       ggplot(data=df) + geom_boxplot(mapping = aes(x =get(input$box_var_x, df)),fill="steelblue") +
@@ -97,7 +99,7 @@ server = function(input, output, session){
     select(df, input$tab_ci)
   })
   
-  output$scatter <- renderPlot({
+  output$scatter <- renderPlotly({
     scatter()
   })
   

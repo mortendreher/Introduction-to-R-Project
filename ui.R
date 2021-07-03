@@ -1,6 +1,7 @@
 library(shiny)
 library(knitr)
 library(shinythemes)
+library(plotly)
 source("global.R")
 
 rmdfiles <- c("about_liver.rmd")
@@ -28,7 +29,7 @@ ui <- navbarPage(theme = shinytheme("slate"),"Liver cancer",
                                                  choices = var_choices, selected = 'size')),
                            column(2, selectInput(inputId = 'scat_var_group', 'Choose grouping variable',
                                                  choices = var_group_choices, selected = 'None')),
-                           column(6, plotOutput("scatter"))
+                           column(6, plotlyOutput("scatter"))
                          ),
                          fluidRow(h2("Boxplot"),
                                   column(2, selectInput(inputId = 'box_var_x', 'Choose variable for x', 
