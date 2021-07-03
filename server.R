@@ -5,6 +5,7 @@ library(survminer)
 library(gmodels)
 library(knitr)
 library(plotly)
+library(gt)
 source("global.R")
 
 server = function(input, output, session){
@@ -131,7 +132,21 @@ server = function(input, output, session){
   output$risk <- renderTable({
     risk_df <- risk() %>%
       count(.data[[input$tab_risk_1]], .data[[input$tab_risk_2]])
+
+    risk_df <-  as.data.frame(rbind(risk_df$n[1:2], risk_df$n[3:4]))
+    risk_df <-  as.data.frame(cbind(c(0,1), risk_df))%>%
+      mutate(Risk_d1 = risk_df[1,1]/(risk_df[1,1]+risk_df[1,2]),
+             Risk_d0 = risk_df[2,1]/(risk_df[2,1]+risk_df[2,2]),
+             Risk_diff = Risk_d1-Risk_d0,
+             Odds_ratio = (risk_df[1,1]*risk_df[2,2])/(risk_df[2,1]*risk_df[1,2]))
+    colnames(risk_df) = c(" ",0,1, "Risk_d1", "Risk_d0", "Risk_diff", "Odds_ratio")
+    risk_df%>%gt() %>%
+      fmt_number(
+      columns = vars(Risk_d1, Risk_d0, Risk_diff,Odds_ratio),
+      decimals = 2
+    )
     
+
    #  risk_df <- risk()
    #  unique1 <- 0
    #  unique2 <- 0
