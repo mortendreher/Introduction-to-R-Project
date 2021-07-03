@@ -6,11 +6,16 @@ library(gmodels)
 library(knitr)
 library(plotly)
 library(gt)
+library(papeR)
 source("global.R")
 
 server = function(input, output, session){
   df <- read.csv("liver_cancer.csv", header=TRUE)
-  df <- rename(df, ID=X)
+  df <- rename(df, ID=X) %>% select(-(X.1))
+  labels(df) <- c("ID", "Sex", "Age", "Height", "Weight", "BMI", "Diet", "Cholesterol", "Smoker", "Cigs per day", "Packyears", "Alcohol (g/day)",
+                  "Tumour size", "Bilirubin", "Hepatitis B", "Hepatitis C", "Diabetes")
+  
+  
   
   dataset <- reactive({
     select(df, c(ID, input$c_vars))
@@ -38,19 +43,19 @@ server = function(input, output, session){
         #           col = "#D3D3D3",
         #          se = FALSE,
         #         size = 0.8)+
-        labs(title=paste0("Variables ", colnames(df[colnames(df) == input$scat_var_x]) , " and ",
-                          colnames(df[colnames(df) == input$scat_var_y])),
-             x=colnames(df[colnames(df) == input$scat_var_x]), 
-             y=colnames(df[colnames(df) == input$scat_var_y])) + theme_gray()
+        labs(title=paste0("Variables ", labels(df[colnames(df) == input$scat_var_x]) , " and ",
+                          labels(df[colnames(df) == input$scat_var_y])),
+             x=labels(df[colnames(df) == input$scat_var_x]), 
+             y=labels(df[colnames(df) == input$scat_var_y])) + theme_gray()
      }else{
       ggplot(data=df, mapping=aes(x= get(input$scat_var_x), y=get(input$scat_var_y))) +
         geom_point(mapping=aes(colour=unlist_as_char(input$scat_var_group, df)),size=2)+
-        labs(title=paste0("Variables ", colnames(df[colnames(df) == input$scat_var_x]) , " and ",
-                        colnames(df[colnames(df) == input$scat_var_y]), " grouped by ",
-                        colnames(df[colnames(df) == input$scat_var_group])),
-                        x=colnames(df[colnames(df) == input$scat_var_x]), 
-                        y=colnames(df[colnames(df) == input$scat_var_y]),
-                        colour=colnames(df[colnames(df) == input$scat_var_group])) +
+        labs(title=paste0("Variables ", labels(df[colnames(df) == input$scat_var_x]) , " and ",
+                        labels(df[colnames(df) == input$scat_var_y]), " grouped by ",
+                        labels(df[colnames(df) == input$scat_var_group])),
+                        x=labels((df[colnames(df) == input$scat_var_x])), 
+                        y=labels((df[colnames(df) == input$scat_var_y])),
+                        colour=labels(df[colnames(df) == input$scat_var_group])) +
         theme_gray()
      }
   ggplotly(plot)
@@ -58,23 +63,23 @@ server = function(input, output, session){
   box <- reactive(
     if(input$box_var_group == 'None'){
       ggplot(data=df) + geom_boxplot(mapping = aes(x =get(input$box_var_x, df)),fill="steelblue") +
-        labs(title=paste0("Variable ", colnames(df[colnames(df) == input$box_var_x])),
-             x=colnames(df[colnames(df) == input$box_var_x])) +  theme_minimal()
+        labs(title=paste0("Variable ", labels(df[colnames(df) == input$box_var_x])),
+             x=labels(df[colnames(df) == input$box_var_x])) +  theme_minimal()
     }else{
     ggplot(data=df) + geom_boxplot(mapping = aes(x = get(input$box_var_x),
                                                  y= unlist_as_char(input$box_var_group, df),
                                                  fill = unlist_as_char(input$box_var_group, df))) + 
         scale_fill_discrete(name = input$box_var_group, guide = guide_legend(reverse=TRUE)) +
-      labs(title=paste0("Variables ", colnames(df[colnames(df) == input$box_var_x]) , " and ",
-                        colnames(df[colnames(df) == input$box_var_group])),
-           x=colnames(df[colnames(df) == input$box_var_x]), 
-           y=colnames(df[colnames(df) == input$box_var_group])) +theme_minimal()
+      labs(title=paste0("Variables ", labels(df[colnames(df) == input$box_var_x]) , " and ",
+                        labels(df[colnames(df) == input$box_var_group])),
+           x=labels(df[colnames(df) == input$box_var_x]), 
+           y=labels(df[colnames(df) == input$box_var_group])) +theme_minimal()
     } 
   )
   histo <- reactive(
     ggplot(data=df) + geom_histogram(mapping = aes(x=get(input$histo_var_x)),colour ="black", fill="steelblue") +
-      labs(title=paste0("Histogram of variable ", colnames(df[colnames(df) == input$histo_var_x])),
-           x=colnames(df[colnames(df) == input$histo_var_x]), 
+      labs(title=paste0("Histogram of variable ", labels(df[colnames(df) == input$histo_var_x])),
+           x=labels(df[colnames(df) == input$histo_var_x]), 
            y="Frequency")+ theme_minimal()
 
   )
