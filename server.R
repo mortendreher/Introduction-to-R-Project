@@ -30,7 +30,7 @@ server <- function(input, output, session) {
           x = labels(df[colnames(df) == input$scat_var_x]),
           y = labels(df[colnames(df) == input$scat_var_y])
         ) +
-        theme_gray()
+        theme_gray(base_size=14)
     } else {
       ggplot(data = df, mapping = aes(x = get(input$scat_var_x), y = get(input$scat_var_y))) +
         geom_point(mapping = aes(colour = unlist_as_char(input$scat_var_group, df)), size = 2) +
@@ -44,7 +44,7 @@ server <- function(input, output, session) {
           y = labels((df[colnames(df) == input$scat_var_y])),
           colour = labels(df[colnames(df) == input$scat_var_group])
         ) +
-        theme_gray()
+        theme_gray(base_size=14)
     }
     ggplotly(plot)
   })
@@ -56,7 +56,7 @@ server <- function(input, output, session) {
           title = paste0("Variable ", labels(df[colnames(df) == input$box_var_x])),
           x = labels(df[colnames(df) == input$box_var_x])
         ) +
-        theme_minimal()
+        theme_minimal(base_size=16)
     } else {
       ggplot(data = df) +
         geom_boxplot(mapping = aes(
@@ -73,7 +73,7 @@ server <- function(input, output, session) {
           x = labels(df[colnames(df) == input$box_var_x]),
           y = labels(df[colnames(df) == input$box_var_group])
         ) +
-        theme_minimal()
+        theme_minimal(base_size=16)
     }
   )
   histo <- reactive(
@@ -84,7 +84,7 @@ server <- function(input, output, session) {
         x = labels(df[colnames(df) == input$histo_var_x]),
         y = "Frequency"
       ) +
-      theme_minimal()
+      theme_minimal(base_size=16)
   )
 
   freq <- reactive(
@@ -104,41 +104,48 @@ server <- function(input, output, session) {
       select(df, input$tab_risk_1)
     }
   )
-  
+
   ci_out <- reactive({
     select(df, input$tab_ci)
   })
-  
+
   kap_mei <- reactive({
-    fit <- survfit(data=df_alive[13:14,], Surv(time=as.numeric(df_surv[1,]), event=as.numeric(df_surv[2,]))~1)
-      # survfit(Surv(time, status) ~ 1, data = lung)
-    ggsurvplot(fit=df_alive, risk.table = TRUE)
-    # browser()
+    browser()
+    
   })
-  
+
   sims_var <- reactive({
-    if(!is.na(input$sims_pat) & input$sims_pat >= 1 & input$sims_pat <=300 & is.integer(input$sims_pat) ) { 
-    if(input$sims=='bili') {
-      ggplot(data=df_bili, mapping=aes(x=1:12, y=df_bili[,input$sims_pat])) + geom_line(colour="steelblue") + 
-        geom_area(fill="steelblue", alpha=0.5) +
-        geom_point() + scale_x_continuous(breaks=seq(0,12,by=1)) +
-        labs(x="Time in months", y="Bilirubin", title=paste("Bilirubin over time for patient", input$sims_pat))
-    } else if(input$sims=='bmi') {
-      ggplot(data=df_bmi, mapping=aes(x=1:12, y=df_bmi[,input$sims_pat])) + geom_line(colour="steelblue") +
-        geom_area(fill="steelblue", alpha=0.5) +
-        geom_point() + scale_x_continuous(breaks=seq(0,12,by=1)) +
-        labs(x="Time in months", y="BMI", title=paste("BMI over time for patient", input$sims_pat))
-    } else if(input$sims=='size') {
-      ggplot(data=df_size, mapping=aes(x=1:12, y=df_size[,input$sims_pat])) + geom_line(colour="steelblue") +
-        geom_area(fill="steelblue", alpha=0.5) +
-        geom_point() + scale_x_continuous(breaks=seq(0,12,by=1)) +
-        labs(x="Time in months", y="Tumour size", title=paste("Tumour size over time for patient", input$sims_pat))
-    } else if(input$sims=='weight') {
-      ggplot(data=df_weight, mapping=aes(x=1:12, y=df_weight[,input$sims_pat])) + geom_line(colour="steelblue") +
-        geom_area(fill="steelblue", alpha=0.5) +
-        geom_point() + scale_x_continuous(breaks=seq(0,12,by=1)) +
-        labs(x="Time in months", y="Weight", title=paste("Weight over time for patient", input$sims_pat))
-    }
+    time <- 1:12
+    if (!is.na(input$sims_pat) & input$sims_pat >= 1 & input$sims_pat <= 300 & is.integer(input$sims_pat)) {
+      if (input$sims == "bili") {
+        ggplot(data = df_bili, mapping = aes(x = time, y = df_bili[, input$sims_pat])) +
+          geom_line(colour = "steelblue") +
+          geom_area(fill = "steelblue", alpha = 0.5) +
+          geom_point() +
+          scale_x_continuous(breaks = seq(0, 12, by = 1)) +
+          labs(x = "Time in months", y = "Bilirubin", title = paste("Bilirubin over time for patient", input$sims_pat))
+      } else if (input$sims == "bmi") {
+        ggplot(data = df_bmi, mapping = aes(x = time, y = df_bmi[, input$sims_pat])) +
+          geom_line(colour = "steelblue") +
+          geom_area(fill = "steelblue", alpha = 0.5) +
+          geom_point() +
+          scale_x_continuous(breaks = seq(0, 12, by = 1)) +
+          labs(x = "Time in months", y = "BMI", title = paste("BMI over time for patient", input$sims_pat))
+      } else if (input$sims == "size") {
+        ggplot(data = df_size, mapping = aes(x = time, y = df_size[, input$sims_pat])) +
+          geom_line(colour = "steelblue") +
+          geom_area(fill = "steelblue", alpha = 0.5) +
+          geom_point() +
+          scale_x_continuous(breaks = seq(0, 12, by = 1)) +
+          labs(x = "Time in months", y = "Tumour size", title = paste("Tumour size over time for patient", input$sims_pat))
+      } else if (input$sims == "weight") {
+        ggplot(data = df_weight, mapping = aes(x = time, y = df_weight[, input$sims_pat])) +
+          geom_line(colour = "steelblue") +
+          geom_area(fill = "steelblue", alpha = 0.5) +
+          geom_point() +
+          scale_x_continuous(breaks = seq(0, 12, by = 1)) +
+          labs(x = "Time in months", y = "Weight", title = paste("Weight over time for patient", input$sims_pat))
+      }
     }
   })
 
@@ -204,11 +211,14 @@ server <- function(input, output, session) {
     colnames(tab) <- c("Alpha", "Lower limit", "Mean", "Upper limit", "Standard error")
     tab
   })
-  
-  output$plot_km <- renderPlotly({
-     kap_mei()
-    })
-  
+
+  output$plot_km <- renderPlot({
+    fit <- survfit(Surv(df_surv$time,df_surv$event) ~ 1, data = df_surv)
+    survfit(Surv(time, status) ~ 1, data = lung)
+    ggsurvplot(fit = fit, palette="#2E9FDF", risk.table = TRUE)
+
+  })
+
   output$plot_sims <- renderPlotly({
     sims_var()
   })

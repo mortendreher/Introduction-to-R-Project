@@ -41,7 +41,9 @@ for(i in (1:300)) {
   }
 }
 
-df_surv <- as.data.frame(t(df_alive[13:14,]))
+df_surv <- as.data.frame(t(df_alive[13:14,])) 
+colnames(df_surv) <- c("time", "event")
+
 
 c_vars_choices <- c(
   "Sex (0=w, 1=m)" = "sex", "Age" = "age", "Height" = "height", "Weight" = "weight", "BMI" = "bmi",

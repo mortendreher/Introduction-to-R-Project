@@ -120,7 +120,7 @@ ui <- navbarPage(
   tabPanel("Survival Analysis",
     icon = icon("poll"),
     h2("Kaplan-Meier-Curve"),
-    plotlyOutput("plot_km"),
+    fluidRow(column(8,plotOutput("plot_km"))),
     h2("Simulated variables"),
     sidebarLayout(
       sidebarPanel(
