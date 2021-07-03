@@ -1,6 +1,7 @@
 library(shiny)
 library(knitr)
 library(shinythemes)
+library(plotly)
 
 rmdfiles <- c("about_liver.rmd")
 sapply(rmdfiles, knit, quiet = T)
@@ -63,7 +64,7 @@ ui <- navbarPage(theme = shinytheme("slate"),"Liver cancer",
                                                         choices = var_risk_choices, selected = 'hbv')),
                                   mainPanel(tableOutput("risk"))
                                   ),
-                         h2("Confidence Intervals"),
+                         h2("Confidence Intervals (based on t-Test statistic)"),
                          sidebarLayout(sidebarPanel(selectInput(inputId = 'tab_ci', 'Choose a metric variable',
                                                         choices = var_choices, selected = 'bili')
                                                           ,

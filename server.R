@@ -63,7 +63,8 @@ server = function(input, output, session){
     }else{
     ggplot(data=df) + geom_boxplot(mapping = aes(x = get(input$box_var_x),
                                                  y= unlist_as_char(input$box_var_group, df),
-                                                 fill = get(input$box_var_group))) + 
+                                                 fill = unlist_as_char(input$box_var_group, df))) + 
+        scale_fill_discrete(name = input$box_var_group, guide = guide_legend(reverse=TRUE)) +
       labs(title=paste0("Variables ", colnames(df[colnames(df) == input$box_var_x]) , " and ",
                         colnames(df[colnames(df) == input$box_var_group])),
            x=colnames(df[colnames(df) == input$box_var_x]), 
