@@ -1,5 +1,3 @@
-
-
 rmdfiles <- c("about_liver.rmd")
 sapply(rmdfiles, knit, quiet = T)
 
@@ -120,7 +118,7 @@ ui <- navbarPage(
   tabPanel("Survival Analysis",
     icon = icon("poll"),
     h2("Kaplan-Meier-Curve"),
-    fluidRow(column(8,plotOutput("plot_km"))),
+    fluidRow(column(8, plotOutput("plot_km"))),
     h2("Simulated variables"),
     sidebarLayout(
       sidebarPanel(

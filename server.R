@@ -30,7 +30,7 @@ server <- function(input, output, session) {
           x = labels(df[colnames(df) == input$scat_var_x]),
           y = labels(df[colnames(df) == input$scat_var_y])
         ) +
-        theme_gray(base_size=14)
+        theme_gray(base_size = 14)
     } else {
       ggplot(data = df, mapping = aes(x = get(input$scat_var_x), y = get(input$scat_var_y))) +
         geom_point(mapping = aes(colour = unlist_as_char(input$scat_var_group, df)), size = 2) +
@@ -44,7 +44,7 @@ server <- function(input, output, session) {
           y = labels((df[colnames(df) == input$scat_var_y])),
           colour = labels(df[colnames(df) == input$scat_var_group])
         ) +
-        theme_gray(base_size=14)
+        theme_gray(base_size = 14)
     }
     ggplotly(plot)
   })
@@ -53,10 +53,10 @@ server <- function(input, output, session) {
       ggplot(data = df) +
         geom_boxplot(mapping = aes(x = get(input$box_var_x, df)), fill = "steelblue") +
         labs(
-          title = paste0("Variable ", labels(df[colnames(df) == input$box_var_x])),
+          title = paste0("Boxplot for variable ", labels(df[colnames(df) == input$box_var_x])),
           x = labels(df[colnames(df) == input$box_var_x])
         ) +
-        theme_minimal(base_size=16)
+        theme_minimal(base_size = 16)
     } else {
       ggplot(data = df) +
         geom_boxplot(mapping = aes(
@@ -67,13 +67,13 @@ server <- function(input, output, session) {
         scale_fill_discrete(name = input$box_var_group, guide = guide_legend(reverse = TRUE)) +
         labs(
           title = paste0(
-            "Variables ", labels(df[colnames(df) == input$box_var_x]), " and ",
+            "Boxplot for variable ", labels(df[colnames(df) == input$box_var_x]), " grouped by ",
             labels(df[colnames(df) == input$box_var_group])
           ),
           x = labels(df[colnames(df) == input$box_var_x]),
           y = labels(df[colnames(df) == input$box_var_group])
         ) +
-        theme_minimal(base_size=16)
+        theme_minimal(base_size = 16)
     }
   )
   histo <- reactive(
@@ -84,7 +84,7 @@ server <- function(input, output, session) {
         x = labels(df[colnames(df) == input$histo_var_x]),
         y = "Frequency"
       ) +
-      theme_minimal(base_size=16)
+      theme_minimal(base_size = 16)
   )
 
   freq <- reactive(
@@ -111,7 +111,6 @@ server <- function(input, output, session) {
 
   kap_mei <- reactive({
     browser()
-    
   })
 
   sims_var <- reactive({
@@ -183,20 +182,21 @@ server <- function(input, output, session) {
       count(.data[[input$tab_risk_1]], .data[[input$tab_risk_2]])
 
     risk_df <- as.data.frame(rbind(risk_df$n[1:2], risk_df$n[3:4]))
-    risk_df <- as.data.frame(cbind(c(0, 1), risk_df)) %>%
+    risk_df <- as.data.frame(cbind(c("0", "1"), risk_df)) %>%
       mutate(
-        Risk_d1 = risk_df[1, 1] / (risk_df[1, 1] + risk_df[1, 2]),
-        Risk_d0 = risk_df[2, 1] / (risk_df[2, 1] + risk_df[2, 2]),
+        Risk_d1 = risk_df[1, 2] / (risk_df[1, 1] + risk_df[1, 2]),
+        Risk_d0 = risk_df[2, 2] / (risk_df[2, 1] + risk_df[2, 2]),
         Risk_diff = Risk_d1 - Risk_d0,
         Odds_ratio = (risk_df[1, 1] * risk_df[2, 2]) / (risk_df[2, 1] * risk_df[1, 2])
       )
-    colnames(risk_df) <- c(" ", 0, 1, "Risk_d1", "Risk_d0", "Risk_diff", "Odds_ratio")
     risk_df %>%
       gt() %>%
       fmt_number(
         columns = vars(Risk_d1, Risk_d0, Risk_diff, Odds_ratio),
         decimals = 2
       )
+    colnames(risk_df) <- c(" ", "0", "1", "Risk group 1", "Risk group 2", "Risk difference", "Odds ratio")
+    risk_df
   })
 
   output$ci <- renderTable({
@@ -213,10 +213,8 @@ server <- function(input, output, session) {
   })
 
   output$plot_km <- renderPlot({
-    fit <- survfit(Surv(df_surv$time,df_surv$event) ~ 1, data = df_surv)
-    survfit(Surv(time, status) ~ 1, data = lung)
-    ggsurvplot(fit = fit, palette="#2E9FDF", risk.table = TRUE)
-
+    fit <- survfit(Surv(df_surv$time, df_surv$event) ~ 1, data = df_surv)
+    ggsurvplot(fit = fit, palette = "#2E9FDF", risk.table = TRUE)
   })
 
   output$plot_sims <- renderPlotly({
