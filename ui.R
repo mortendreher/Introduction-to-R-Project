@@ -3,7 +3,10 @@ sapply(rmdfiles, knit, quiet = T)
 
 ui <- navbarPage(
   theme = shinytheme("slate"), "Liver cancer",
-  tabPanel("Team members", "By Melita Coneva, Morten Dreher and Lars Andersen", icon = icon("users")),
+  tabPanel("About App", "Melita Coneva, Morten Dreher and Lars Andersen", tags$br(),
+    tags$a(href = "https://github.com/mortendreher/Introduction-to-R-Project", "Git Repository"),
+    icon = icon("users")
+  ),
   tabPanel("About liver cancer",
     icon = icon("info"),
     withMathJax(includeMarkdown("about_liver.md"))

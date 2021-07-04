@@ -116,35 +116,16 @@ server <- function(input, output, session) {
   sims_var <- reactive({
     time <- 1:12
     if (!is.na(input$sims_pat) & input$sims_pat >= 1 & input$sims_pat <= 300 & is.integer(input$sims_pat)) {
-      if (input$sims == "bili") {
-        ggplot(data = df_bili, mapping = aes(x = time, y = df_bili[, input$sims_pat])) +
-          geom_line(colour = "steelblue") +
-          geom_area(fill = "steelblue", alpha = 0.5) +
-          geom_point() +
-          scale_x_continuous(breaks = seq(0, 12, by = 1)) +
-          labs(x = "Time in months", y = "Bilirubin", title = paste("Bilirubin over time for patient", input$sims_pat))
-      } else if (input$sims == "bmi") {
-        ggplot(data = df_bmi, mapping = aes(x = time, y = df_bmi[, input$sims_pat])) +
-          geom_line(colour = "steelblue") +
-          geom_area(fill = "steelblue", alpha = 0.5) +
-          geom_point() +
-          scale_x_continuous(breaks = seq(0, 12, by = 1)) +
-          labs(x = "Time in months", y = "BMI", title = paste("BMI over time for patient", input$sims_pat))
-      } else if (input$sims == "size") {
-        ggplot(data = df_size, mapping = aes(x = time, y = df_size[, input$sims_pat])) +
-          geom_line(colour = "steelblue") +
-          geom_area(fill = "steelblue", alpha = 0.5) +
-          geom_point() +
-          scale_x_continuous(breaks = seq(0, 12, by = 1)) +
-          labs(x = "Time in months", y = "Tumour size", title = paste("Tumour size over time for patient", input$sims_pat))
-      } else if (input$sims == "weight") {
-        ggplot(data = df_weight, mapping = aes(x = time, y = df_weight[, input$sims_pat])) +
-          geom_line(colour = "steelblue") +
-          geom_area(fill = "steelblue", alpha = 0.5) +
-          geom_point() +
-          scale_x_continuous(breaks = seq(0, 12, by = 1)) +
-          labs(x = "Time in months", y = "Weight", title = paste("Weight over time for patient", input$sims_pat))
-      }
+      df_reactive <- get(paste0("df_", input$sims))
+      ggplot(data = df_reactive, mapping = aes(x = time, y = df_reactive[, input$sims_pat])) +
+        geom_line(colour = "steelblue") +
+        geom_area(fill = "steelblue", alpha = 0.5) +
+        geom_point() +
+        scale_x_continuous(breaks = seq(0, 12, by = 1)) +
+        labs(x = "Time in months", y = labels(df[colnames(df) == input$sims]), title = paste0(
+          labels(df[colnames(df) == input$sims]),
+          " over time for patient ", input$sims_pat
+        ))
     }
   })
 
@@ -166,10 +147,10 @@ server <- function(input, output, session) {
     expr
   })
 
-  output$freq <- render_gt({
+  output$freq <- render_gt(align = "left", {
     x <- as.data.frame(table(freq()))
     if (length(x) < 3) {
-      names(x) <- c(labels(df[colnames(df) == input$tab_freq_1]), "Freq") # labels(df[colnames(df) == input$tab_risk_2])
+      names(x) <- c(labels(df[colnames(df) == input$tab_freq_1]), "Freq")
     }
     else {
       names(x) <- c(
@@ -180,7 +161,7 @@ server <- function(input, output, session) {
     expr <- (x)
   })
 
-  output$risk <- render_gt({
+  output$risk <- render_gt(align = "left", {
     if (input$tab_risk_1 != input$tab_risk_2) {
       risk_df <- risk() %>%
         count(.data[[input$tab_risk_1]], .data[[input$tab_risk_2]])
@@ -188,8 +169,6 @@ server <- function(input, output, session) {
       risk_df <- as.data.frame(rbind(risk_df$n[1:2], risk_df$n[3:4]))
       risk_df <- as.data.frame(cbind(placeholder = c("0", "1"), risk_df)) %>%
         mutate(
-          # Risk_d1 = risk_df[1, 2] / (risk_df[1, 1] + risk_df[1, 2]),
-          # Risk_d0 = risk_df[2, 2] / (risk_df[2, 1] + risk_df[2, 2]),
           Risk = risk_df[, 2] / (risk_df[, 1] + risk_df[, 2]),
           Risk_diff = (risk_df[1, 2] / (risk_df[1, 1] + risk_df[1, 2])) - (risk_df[2, 2] / (risk_df[2, 1] + risk_df[2, 2])),
           Relative_risk = (risk_df[1, 2] / (risk_df[1, 1] + risk_df[1, 2])) / (risk_df[2, 2] / (risk_df[2, 1] + risk_df[2, 2])),
