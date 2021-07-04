@@ -166,48 +166,53 @@ server <- function(input, output, session) {
     expr
   })
 
-  output$freq <- renderTable({
+  output$freq <- render_gt({
     x <- as.data.frame(table(freq()))
     if (length(x) < 3) {
-      names(x) <- c(input$tab_freq_1, "Freq")
+      names(x) <- c(labels(df[colnames(df) == input$tab_freq_1]), "Freq") # labels(df[colnames(df) == input$tab_risk_2])
     }
     else {
-      names(x) <- c(input$tab_freq_1, input$tab_freq_2, "Freq")
+      names(x) <- c(
+        labels(df[colnames(df) == input$tab_freq_1]),
+        labels(df[colnames(df) == input$tab_freq_2]), "Freq"
+      )
     }
     expr <- (x)
   })
 
   output$risk <- render_gt({
-    risk_df <- risk() %>%
-      count(.data[[input$tab_risk_1]], .data[[input$tab_risk_2]])
+    if (input$tab_risk_1 != input$tab_risk_2) {
+      risk_df <- risk() %>%
+        count(.data[[input$tab_risk_1]], .data[[input$tab_risk_2]])
 
-    risk_df <- as.data.frame(rbind(risk_df$n[1:2], risk_df$n[3:4]))
-    risk_df <- as.data.frame(cbind(placeholder = c("0", "1"), risk_df)) %>%
-      mutate(
-        # Risk_d1 = risk_df[1, 2] / (risk_df[1, 1] + risk_df[1, 2]),
-        # Risk_d0 = risk_df[2, 2] / (risk_df[2, 1] + risk_df[2, 2]),
-        Risk = risk_df[, 2] / (risk_df[, 1] + risk_df[, 2]),
-        Risk_diff = (risk_df[1, 2] / (risk_df[1, 1] + risk_df[1, 2])) - (risk_df[2, 2] / (risk_df[2, 1] + risk_df[2, 2])),
-        Relative_risk = (risk_df[1, 2] / (risk_df[1, 1] + risk_df[1, 2])) / (risk_df[2, 2] / (risk_df[2, 1] + risk_df[2, 2])),
-        Odds = risk_df[, 2] / risk_df[, 1],
-        Odds_ratio = (risk_df[1, 1] * risk_df[2, 2]) / (risk_df[2, 1] * risk_df[1, 2])
-      )
-    risk_df[2, 5] <- risk_df[2, 5] * (-1)
-    risk_df[2, 6] <- 1 / risk_df[2, 6]
-    risk_df[2, 8] <- 1 / risk_df[2, 8]
+      risk_df <- as.data.frame(rbind(risk_df$n[1:2], risk_df$n[3:4]))
+      risk_df <- as.data.frame(cbind(placeholder = c("0", "1"), risk_df)) %>%
+        mutate(
+          # Risk_d1 = risk_df[1, 2] / (risk_df[1, 1] + risk_df[1, 2]),
+          # Risk_d0 = risk_df[2, 2] / (risk_df[2, 1] + risk_df[2, 2]),
+          Risk = risk_df[, 2] / (risk_df[, 1] + risk_df[, 2]),
+          Risk_diff = (risk_df[1, 2] / (risk_df[1, 1] + risk_df[1, 2])) - (risk_df[2, 2] / (risk_df[2, 1] + risk_df[2, 2])),
+          Relative_risk = (risk_df[1, 2] / (risk_df[1, 1] + risk_df[1, 2])) / (risk_df[2, 2] / (risk_df[2, 1] + risk_df[2, 2])),
+          Odds = risk_df[, 2] / risk_df[, 1],
+          Odds_ratio = (risk_df[1, 1] * risk_df[2, 2]) / (risk_df[2, 1] * risk_df[1, 2])
+        )
+      risk_df[2, 5] <- risk_df[2, 5] * (-1)
+      risk_df[2, 6] <- 1 / risk_df[2, 6]
+      risk_df[2, 8] <- 1 / risk_df[2, 8]
 
-    risk_df <- gt(risk_df) %>%
-      fmt_number(
-        columns = c(Risk, Risk_diff, Relative_risk, Odds, Odds_ratio),
-        decimals = 2
-      ) %>%
-      tab_spanner(label = labels(df[colnames(df) == input$tab_risk_2]), columns = c(V1, V2)) %>%
-      cols_label(
-        placeholder = labels(df[colnames(df) == input$tab_risk_1]), V1 = "0", V2 = "1",
-        Risk = "Risk in group", Risk_diff = "Risk difference", Relative_risk = "Relative risk",
-        Odds = "Odds in group", Odds_ratio = "Odds ratio"
-      )
-    risk_df
+      risk_df <- gt(risk_df) %>%
+        fmt_number(
+          columns = c(Risk, Risk_diff, Relative_risk, Odds, Odds_ratio),
+          decimals = 2
+        ) %>%
+        tab_spanner(label = labels(df[colnames(df) == input$tab_risk_2]), columns = c(V1, V2)) %>%
+        cols_label(
+          placeholder = labels(df[colnames(df) == input$tab_risk_1]), V1 = "0", V2 = "1",
+          Risk = "Risk in group", Risk_diff = "Risk difference", Relative_risk = "Relative risk",
+          Odds = "Odds in group", Odds_ratio = "Odds ratio"
+        )
+      risk_df
+    }
   })
 
   output$ci <- renderTable({

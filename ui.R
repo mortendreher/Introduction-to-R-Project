@@ -84,7 +84,7 @@ ui <- navbarPage(
           choices = var_group_choices, selected = "None"
         )
       ),
-      mainPanel(tableOutput("freq"))
+      mainPanel(gt_output("freq"))
     ),
     h2("Risks"),
     sidebarLayout(
