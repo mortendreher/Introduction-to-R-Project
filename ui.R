@@ -98,7 +98,7 @@ ui <- navbarPage(
           choices = var_risk_choices, selected = "hbv"
         )
       ),
-      mainPanel(tableOutput("risk"))
+      mainPanel(gt_output("risk"))
     ),
     h2("Confidence Intervals (based on t-Test statistic)"),
     sidebarLayout(

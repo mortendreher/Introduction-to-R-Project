@@ -177,25 +177,36 @@ server <- function(input, output, session) {
     expr <- (x)
   })
 
-  output$risk <- renderTable({
+  output$risk <- render_gt({
     risk_df <- risk() %>%
       count(.data[[input$tab_risk_1]], .data[[input$tab_risk_2]])
 
     risk_df <- as.data.frame(rbind(risk_df$n[1:2], risk_df$n[3:4]))
-    risk_df <- as.data.frame(cbind(c("0", "1"), risk_df)) %>%
+    risk_df <- as.data.frame(cbind(placeholder = c("0", "1"), risk_df)) %>%
       mutate(
-        Risk_d1 = risk_df[1, 2] / (risk_df[1, 1] + risk_df[1, 2]),
-        Risk_d0 = risk_df[2, 2] / (risk_df[2, 1] + risk_df[2, 2]),
-        Risk_diff = Risk_d1 - Risk_d0,
+        # Risk_d1 = risk_df[1, 2] / (risk_df[1, 1] + risk_df[1, 2]),
+        # Risk_d0 = risk_df[2, 2] / (risk_df[2, 1] + risk_df[2, 2]),
+        Risk = risk_df[, 2] / (risk_df[, 1] + risk_df[, 2]),
+        Risk_diff = (risk_df[1, 2] / (risk_df[1, 1] + risk_df[1, 2])) - (risk_df[2, 2] / (risk_df[2, 1] + risk_df[2, 2])),
+        Relative_risk = (risk_df[1, 2] / (risk_df[1, 1] + risk_df[1, 2])) / (risk_df[2, 2] / (risk_df[2, 1] + risk_df[2, 2])),
+        Odds = risk_df[, 2] / risk_df[, 1],
         Odds_ratio = (risk_df[1, 1] * risk_df[2, 2]) / (risk_df[2, 1] * risk_df[1, 2])
       )
-    risk_df %>%
-      gt() %>%
+    risk_df[2, 5] <- risk_df[2, 5] * (-1)
+    risk_df[2, 6] <- 1 / risk_df[2, 6]
+    risk_df[2, 8] <- 1 / risk_df[2, 8]
+
+    risk_df <- gt(risk_df) %>%
       fmt_number(
-        columns = vars(Risk_d1, Risk_d0, Risk_diff, Odds_ratio),
+        columns = c(Risk, Risk_diff, Relative_risk, Odds, Odds_ratio),
         decimals = 2
+      ) %>%
+      tab_spanner(label = labels(df[colnames(df) == input$tab_risk_2]), columns = c(V1, V2)) %>%
+      cols_label(
+        placeholder = labels(df[colnames(df) == input$tab_risk_1]), V1 = "0", V2 = "1",
+        Risk = "Risk in group", Risk_diff = "Risk difference", Relative_risk = "Relative risk",
+        Odds = "Odds in group", Odds_ratio = "Odds ratio"
       )
-    colnames(risk_df) <- c(" ", "0", "1", "Risk group 1", "Risk group 2", "Risk difference", "Odds ratio")
     risk_df
   })
 
