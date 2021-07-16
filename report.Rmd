@@ -6,7 +6,9 @@ output:
   pdf_document: 
     toc: true
     toc_depth: 2
-  html_document: default
+  html_document: 
+    toc: true
+    toc_depth: 2
   fontsize: 12pt
   spacing: 1.15
 ---
@@ -23,26 +25,26 @@ This section concerns itself with how our team adapted the _cancer_data.csv_ fil
 
 ## General changes
 
-Metric variables with digits were rounded to decimal points depending on their values. As height was given in centimeters, we rounded it to full integers. Weight, given in kilograms, was rounded to one decimal point. Cholesterol values were rounded to two digits. 
-
+Metric variables with digits were rounded to decimal points depending on their values. As height was given in centimeters, we rounded it to full integers. Weight, given in kilograms, was rounded to one decimal point. Cholesterol values were rounded to two digits.  
 Gender was renamed to sex and smoking was renamed to smoker.
 
 ## Added variables
 
-To adjust the dataset to liver cancer, we added a few variables.
+To adjust the dataset for liver cancer, we added a few variables.  
 As both patient height and weight were available, we computed Body Mass Index (BMI) for all patients with one decimal point.
-When looking at smoking behaviour, packyears is a more powerful measure than a dichotomous variable indicating whether or not a person is currently smoking. Packyears are calculated as the product of years that a person smoked and the cigarette packs they smoke each day. I.e. a person smoking one pack of cigarettes a day for 5 years would have 5 packyears. To compute packyears, we added a variable cigs_per_day describing how many (if any) cigarettes patients smoked each day. This variable can only be realistically measured by asking the patient about it. In such surveys, humans tend to round numbers, which is why the cigarettes per day variable only contains uniformly randomly generated multiples of ten ranging from 0 (for non-smokers) to 60. 
+When looking at smoking behaviour, packyears is a more powerful measure than the given dichotomous variable indicating whether or not a person is currently smoking. Packyears are calculated as the product of years that a person has been smoking for and the number of cigarette packs they smoke each day. I.e. a person smoking one pack of cigarettes a day for 5 years would have 5 packyears. To compute packyears, we added a variable _cigs_per_day_ describing how many (if any) cigarettes patients smoked each day. This variable can only be realistically measured by asking the patient about it. In such surveys, humans tend to round numbers, which is why we decided that the cigarettes per day variable should only contain uniformly randomly generated multiples of ten ranging from 0 (for non-smokers) to 60. 
 With 20 cigarettes per pack, this means that we have a maximum of 3 packs per day smoked.  
 The more difficult part was modeling how long patients had been smoking for. According to the US Centers for Disease Control and Prevention, 9 out of 10 smoking adults first tried smoking by age 18 and 99% first tried smoking by age 26.  
-Therefore, we determined that all smoking patients started between ages 16 and 26 or age 16 and the smallest age observed in our study should it be smaller than 26. The smallest age observed in the data coincided to be precisely 26. In this interval, uniformly random values were generated.  
+Therefore, we determined that all smoking patients started between ages 16 and 26 or age 16 and the smallest age observed in our study, should it be smaller than 26. The smallest age observed in the data coincided to be precisely 26. In this interval, uniformly random values were generated.  
 Packyears were then calculated as: 
 $$
 packyears=\frac{cigs\_per\_day}{20} \cdot (age-age_{started})
 $$
-Another variable we saw closely related to liver cancer was alcohol consumption. Alcohol abuse can lead to fatty liver disease or liver cirrhosis and thus increase risk for liver cancer. To generate these values, we decided to use a positively skewed distribution in order to simulate rather low alcohol consumption in most patients while still allowing for outliers with high alcohol consumption.
+Another variable we considered to be closely related to liver cancer was alcohol consumption. Alcohol abuse can lead to fatty liver disease or liver cirrhosis and thus increase risk for liver cancer. To generate these values, we decided to use a positively skewed distribution in order to simulate rather low alcohol consumption for most patients while still allowing for outliers with high alcohol consumption.
 We multiplied random values of a chi-squared distribution with 4 degrees of freedom by 25 to generate values for alcohol consumption.  
 Compared to the general population, the generated alcohol consumption values were very high, however we justified these high values by the fact that our sample consists exclusively of patients with liver cancer, a disease for which excessive alcohol consumption is a major risk factor.  
-Alcohol consumption in grams per day was saved with the precision of one decimal point.
+Alcohol consumption in grams per day was saved with the precision of one decimal point.  
+The distribution used to simulate alcohol consumption in grams per day:
 
 ![](img/alc_dist.png){width=50%}
 
@@ -67,26 +69,26 @@ BMI class | BMI
 
 For observations with missing cholesterol values, we determined their BMI group and imputed the arithmetic mean for cholesterol in that group (over all non-missing observations).
 The motivation behind this was that patients with similar BMIs were assumed to have similar cholesterol values as well.  
-However, this approach was discarded later on as BMI groups were too large and we feared that mean imputation would not be accurate and would underestimate true variance for such large sample sizes. 
+However, this approach was discarded later on as BMI groups were large and we feared that mean imputation would be inaccurate and would underestimate true variance for such large group sizes. 
 
 ### kNN imputation
 
-As our concerns with the accuracy of the BMI-grouped means approach grew, we started looking for alternative imputation methods based on fewer observations. Our goal was to replace missing values by similar observations in the hope that they would also be similar for cholesterol.
-A very common and effective way to replace missing data based on similar observations is the kNN or k-nearest neighbours method.  
+As our concerns with the accuracy of the aforementioned BMI-grouped means approach grew, we started looking for alternative imputation methods based on fewer observations. Our goal was to replace missing values by using similar observations in the hope that they would also be similar for cholesterol.
+A very common and effective way to replace missing data based on similar observations is the kNN (k-nearest neighbours) method.  
 This algorithm determines the _k_ closest entries to an observation with missing values and imputes the mean of those nearest neighbours.  
-When it comes to choosing _k_, there is no universally optimal solution. Different values for _k_ might be optimal for different datasets.  
-In more sophisticated imputations, the existing data can be used to calculate the optimal value for _k_. However, as data imputation was not the main focus of this project, we simply chose _k_ so that neighbour values were similar. Comparing standard deviations of cholesterol for _k_=3,5,7,9 showed that values were most similar for _k_=3, so this was chosen as the number of neighbours to be considered.  
-For our kNN approach, we decided that as few as possible variables should be used and that those variables should have a substantial association to cholesterol as to not reduce model accuracy due to noise in the data. Furthermore, we realised that implementing weighing of variables could prove useful.  
-The variables we used to find nearest neighbours for cholesterol were:  
+When it comes to choosing _k_, there is no universally optimal solution. Different values for _k_ might be optimal for different datasets.
+In more sophisticated imputations, the existing data can be used to calculate the optimal value for _k_. However, as data imputation was not the main focus of this project, we simply chose _k_ so that neighbour values were sufficiently similar. Comparing standard deviations of cholesterol for _k_=3,5,7,9 showed that values were most similar for _k_=3, so this was chosen as the number of neighbours to be considered.  
+For our kNN approach, we decided that as few as possible variables should be used and that those variables should have a substantial association to cholesterol as to not reduce model accuracy due to noise in the data. Furthermore, we realised that implementing weighting of variables could prove useful.  
+The variables we used to find nearest neighbours for cholesterol were:
 
  * sex (weight=0.25): distributions of cholesterol differed between sexes
- * age (weight=1): a linear association between age and cholesterol could be found in the data
+ * age (weight=1): a linear association between age and cholesterol was found in the data
  * bmi (weight=1.25): the data showed an association between bmi and cholesterol. bmi was assigned additional weight as higher bmi is associated with higher levels of cholesterol in literature
  * size (weight=1): a linear association between size and cholesterol was present in the data
 
-Our implementation was split into two functions, a first one computing distances and a second one returning the _k_ nearest neighbours based on the first function. 
+Our implementation of the kNN algorithm was split into two functions, one computing distances and a second one returning the _k_ nearest neighbours based on the distances calculated using the first function. 
 
-```{r, eval=FALSE}
+```{r knn, eval=FALSE}
 #' Compute distances from one node in a data frame to all other nodes
 #' @param df Data frame
 #' @param id Row number of the reference node
@@ -127,7 +129,7 @@ knn <- function(df, id, vars, k, weights=rep.int(1,length(vars))) {
 
 Imputed values computed from our kNN method are listed below:
 
-ID of NA | Chol neighbour 1 (distance) | Chol neighbour 2 (distance) | Chol neighbour 3 (distance) | 3NN-mean 
+ID of NA | Chol neighbour 1 (distance) | Chol neighbour 2 (distance) | Chol neighbour 3 (distance) | 3NN-mean (=imputed value)
 --        | --                            | --                        | --                            |-- 
 50 | 197.79 (0) | 201.33 (0.048) | 201.03 (0.048) | __200.05__ 
 72 | 148.67 (0.184) | 157.83 (0.49) | 158.3 (0.525) | __154.93__ 
@@ -140,15 +142,43 @@ In two separate iterations, both imputation methods were used to predict generat
 For both MCAR and MNAR values, our kNN algorithm produced smaller RMSE (1.43 and 1.72 respectively) than naive mean imputation (2.38 and 3.22 respectively). Visually comparing kNN predictions and naive mean predictions to the actual values showed that kNN imputation was also fairly accurate for high and low values while naive mean imputation showed high discrepancy for very high and very low values.  
 
 ```{r, echo=FALSE, out.width="50%"}
-# upper <- list.files()
 include_graphics(path=c("img/knnMCAR.png", "img/meanMCAR.png"))
-# lower <- list.files()
 include_graphics(path=c("img/knnMNAR.png", "img/meanMNAR.png"))
 ```
 
+## Simulations
 
+In order to implement Survival Analysis, we decided to simulate specific variables for 11 additional points in time, resulting in 12 total values with steps being interpreted as months. Modeled variables included patient weight, BMI, tumour size and bilirubin. As cancer patients tend to lose weight over time, weight (and therefore BMI) were modeled to slightly decrease (normal distribution with $\mu =-0.6$ and $\sigma=0.5$ kg) with each month. 
+For tumour size, we decided that both an increase and decrease over time should be possible with a growing tumour being more likely. Tumour size was modeled to be size of the previous month plus a uniformly randomly generated value between -0.01 and 0.05. 
+Bilirubin was updated based on its previous values as well as tumour size for the patient, with tumour growth also implying an increase in bilirubin level.
+Based on these simulations, we computed mortality probabilities for each patient and month. Mortality probability increased with:
+
+ * high age
+ * large tumour size
+ * high bilirubin levels
+ * high alcohol consumption
+ * high number of packyears
+ * diabetes
+ 
+In addition, as it is common in longitudinal studies for patients to drop out of the study, either due to withdrawal or medical reasons, we calculated a censorship probability for each patient and month. We decided that patients with large tumour size, high BMI or high bilirubin levels should be more likely to be censored, as these patients may potentially need to undergo a different treatment.  
+Afterwards, we used the mortality and censorship probabilities to generate a dataset containing information about whether patients are alive, dead or censored for each month. Once a patient had either died or been censored, all of the remaining months were also marked as dead or censored, respectively. 
+After applying our approach, we ended up with 166 alive, 76 dead and 58 censored patients in month 12, values that we deemed acceptable for liver cancer.
+
+## Packages For Dataset Manipulation
+
+ * papeR (version 1.0-5, 2021-03-19)
+ * dplyr (version 1.0.5)
+
+# Individual Contributions
+
+## Morten Dreher
+
+With only few exceptions towards the end of the project, the majority of the project was programmed with all team members being present and giving input. 
+I was responsible for setting up and maintaining our team's Git repository.
+In the final stages of the project, I reworked our risk table using the gt package, fixed some aspects of our Kaplan-Meier-curve and added labels to our data frame columns using the papeR package.
+Other minor changes included fixing plot labels, correcting BMI computation and cleaning of scripts.
 
 # Sources 
 
- * https://pubmed.ncbi.nlm.nih.gov/20563664/#:~:text=Prior%20epidemiologic%20studies%20have%20shown,density%20lipoprotein%20cholesterol%20(LDL).
+ * https://pubmed.ncbi.nlm.nih.gov/20563664/
  * https://www.cdc.gov/tobacco/data_statistics/fact_sheets/youth_data/tobacco_use/
