@@ -19,6 +19,89 @@ library(knitr)
 # knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+
+
+# Introduction
+
+## Liver cancer
+
+### Overview
+
+The liver is the central metabolism organ of the human body.
+It is located in the upper right side of the body, protected by the lower ribs.<br>
+With a weight of approximately 1500 grams, it is the largest gland of the body.  
+Besides metabolism, the liver is also responsible for producing a variety of coagulation factors and hormones.<br>
+The organ is also essential for removing external substances like alcohol and medications from the blood stream. 
+For 2020, the WHO estimated the number of new cases of liver cancer (ICD C22) to be 905 677 (CI:[884695-927157]).  
+According to the WHO, liver cancer caused 830 000 deaths worldwide in 2020, a number only exceeded by lung cancer (1.8 million deaths worldwide) and colorectal cancer (935 000 deaths worldwide).
+
+### Epidemiology
+
+In most sources, liver cancer prevalence, incidence and mortality for men is about 2-3 times as high as it is for women.<br>
+WHO data estimates that in 2020, 632 000 men and 273 000 women were diagnosed with liver cancer and that in the same year, 578 000 men and 253 000 women in association with liver cancer. For men, liver cancer mortality is only surpassed by lung cancer mortality.<br>
+For women on the other hand, liver cancer only takes sixth place in terms of total deaths, with sex-specific tumours like breast and uterus cancer accounting for more deaths.<br>
+For Germany, the most recent data available describes new cases and mortality in 2017. In this year, 6040 men and 2903 women were diagnosed with liver cancer and 5213 men and 2697 women died in association with liver cancer.<br>
+
+### Risk factors 
+
+Chronic hepatitis B or hepatitis C infection greatly increase the risk of developing liver cancer.<br>
+Cirrhosis, an irreversible process in which healthy liver tissue is replaced by scar tissue, thus losing its functions, is also a prominent risk factor for liver cancer.<br>
+Excessive alcohol consumption, obesity, diabetes and nonalcoholic fatty liver disease are also associated with an increased risk for liver cancer.
+
+### Symptoms
+
+There are multiple symptoms, but the one that displays the liver function most is the so called jaundice, also known as Icterus, where your skin and especially your eyes turn yellow. <br>
+Other symptoms as a loss of appetite, feeling generally unwell as well as having a loss of energy and tireness are widely considered as symptoms of cancer of any type.
+
+### Diagnosis
+
+The diagnostic process is the same as for most cancer types. Typically there are blood tests to look for tumour markers as well as a biopsy, in that case of liver cells.<br>
+Other possible diagnostic options are PET scans, CTA or MRI scans.
+
+### Treatment
+
+* Surgery
+* Ablation
+* Embolization Therapy
+* Radiation Therapy
+* Targeted Drug Therapy
+* Immunotherapy
+* Chemotheraphy
+
+### Prevention
+
+As HBV and HCV infections are major risk factors for the development of liver cancer, taking precautions against these viruses can help prevent liver cancer.<br>
+Protection against hepatitis B can be obtained by a vaccine which is recommended for children and adults at risk in many countries including Germany, the US and the UK.<br>
+Hepatitis C is transmitted parenterally and sexually, therefore prevention includes only using clean, disinfected needles and syringes as well as being aware of the health status of sexual partners.<br>
+In the case that an infection with HBV or HCV could not be prevented, treatments reducing liver cancer risk are available.<br>
+In a 2007 meta-analysis, increased coffee consumption was found to be associated to a lower risk of liver cancer.<br>
+Reducing alcohol consumption and keeping a healthy weight can also help reduce liver cancer risk.
+
+# Our plan
+
+## Columns to add
+
+The first step was to gather important information that we needed to adjust the dataset for liver cancer. As weight and height were already given, we decided to calculate the BMI.
+For the variable smoking, which we plan to rename to smoker , we wanted to be able to have the numbers of cigarettes per day. To better quantify the smoking behaviour , we thought of adding and calculating the variable, packyears.
+Another important risk factor that has been linked to an increased chance in getting liver cancer, is alcohol abuse. To have the ability to measure the alcohol consumption, we planned to add the  variable, alcohol consumption  in mg.
+A leading risk factor is chronic carriage of hepatitis B (HBV), or hepatitis C (HCV) . For these two we planned to add two dichotomous variables. Another  dichotomous variable we wanted to add was diabetes. 
+For the missing values for cholesterol, we thought of imputating the data with either KNN or BMI-grouped mean .
+To enhance the dataset, we decided to round multiple variables, such as cholesterol, weight and height. Generally, weight appears with one rounded decimal point and since the height was given in centimetres, we did not need the digits.
+After a closer look at the data, we realized that two variables, smoking and gender, were identical. This would mean, that we have only women that are smokers and non-smoking men. To get a better variation, our idea was to modify one of the variables.
+We also wanted to rename Smoking to smoker and gender to sex.
+
+## Graphs and tables
+We decided to add multiple graphs to our Shiny App. To show the relationship between two numerical variables, we chose a scatter plot. The idea was that the user will be able to define variables for x and y axis and can specify a grouping variable.
+Furthermore, we wanted to add a box plot for a continuous variable, that the user can specify and group it by a categorical variable.
+To summarize discrete or continuous data, we wanted to implement a histogram. Here, as well, the user should be able to choose a variable.
+A last graph that we wanted to add was a pie chart, to be able to show percentage from our data.
+
+Lastly for the continuous(stetige) variables, we decided to create a table that shows the important statistical parameters such as minimum, quartiles, mean and maximum.
+For variables that are normal distributed, we planned to have a table where a user can determine confidence intervals with a specific alpha by their choice.
+Our next step was going to be, to think about confounding.
+
+
 # Dataset manipulation
 
 This section concerns itself with how our team adapted the _cancer_data.csv_ file for our specific needs and how we addressed missing values.
@@ -177,6 +260,10 @@ With only few exceptions towards the end of the project, the majority of the pro
 I was responsible for setting up and maintaining our team's Git repository.
 In the final stages of the project, I reworked our risk table using the gt package, fixed some aspects of our Kaplan-Meier-curve and added labels to our data frame columns using the papeR package.
 Other minor changes included fixing plot labels, correcting BMI computation and cleaning of scripts.
+
+## Melita Coneva
+To make the Shiny App more pleasant to look at, I could get creative and was responsible for the design. This included changing the theme for the navbarPage and the graphs, adding icons to the TabPanels and minor colour changes in our graphs.
+
 
 # Sources 
 
