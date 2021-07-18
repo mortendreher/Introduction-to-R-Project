@@ -263,7 +263,8 @@ After applying our approach, we ended up with 166 alive, 76 dead and 58 censored
 
 # App Implementation
 
-Throughout our project we went through different phases and reworked our design and structure several times. We used multiple libraries in our application.
+Throughout our project we went through different phases and reworked our design and structure several times. We used multiple libraries in our application.  
+
 These are:
 
  * shiny (version 1.6.0)
@@ -303,11 +304,13 @@ Besides the structure of Shiny Apps, we also learned about more advanced methods
 In terms of project difficulty, our team was very happy about the fact that we were able to expand on the app with our own ideas. 
 As our team worked via the version control system Git, additional experience in this field was also gathered.
 
+\pagebreak
+
 # Individual Contributions
 
 ## Lars Andersen
 
-The whole project was programmed and thought out as a team, except some minor excpetions at the end of the project. In the last phase of the project I was responsible for adding and implementing an R Markdown file, containing the information about our chosen cancer type as well as outsorcing our code which was used on multiple occacions in a global R script. Other minor tasks were script cleaning and displaying the boxplot grouping variable by colour in the plot.
+The whole project was programmed and thought out as a team, except some minor exceptions at the end of the project. In the last phase of the project I was responsible for adding and implementing an R Markdown file, containing the information about our chosen cancer type as well as outsourcing our code which was used on multiple occacions in a global R script. Other minor tasks were script cleaning and displaying the boxplot grouping variable by colour in the plot.
 
 ## Morten Dreher
 
@@ -331,6 +334,8 @@ To make the Shiny App more pleasant to look at, I could get creative and was res
  * https://gt.rstudio.com/
  * https://plotly.com/r/
  
+\pagebreak
+
 # Appendix
 
 ```{r, echo=FALSE, out.width="100%"}
