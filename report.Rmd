@@ -29,19 +29,19 @@ library(knitr)
 ### Overview
 
 The liver is the central metabolism organ of the human body.  
-It is located in the upper right side of the body, protected by the lower ribs.
-With a weight of approximately 1500 grams, it is the largest gland of the body.  
+It is located in the upper right side and protected by the lower ribs.
+With a weight of approximately 1500 grams, it is the largest gland of the human anatomy.  
 Besides metabolism, the liver is also responsible for producing a variety of coagulation factors and hormones.  
 The organ is also essential for removing external substances like alcohol and medications from the blood stream.   
 For 2020, the WHO estimated the number of new cases of liver cancer (ICD C22) to be 905 677 (CI:[884695-927157]).  
-According to the WHO, liver cancer caused 830 000 deaths worldwide in 2020, a number only exceeded by lung cancer (1.8 million deaths worldwide) and colorectal cancer (935 000 deaths worldwide).
+According to the WHO, liver cancer caused 830 000 deaths worldwide in 2020 and is therefore considered the type of cancer with the third highest amount of cancer related deaths, a number only exceeded by lung cancer (1.8 million deaths worldwide), which takes the top spot in that statistic and colorectal cancer (935 000 deaths worldwide), which is ranked second for cancer related deaths.
 
 ### Epidemiology
 
 In most sources, liver cancer prevalence, incidence and mortality for men is about 2-3 times as high as it is for women.
 WHO data estimates that in 2020, 632 000 men and 273 000 women were diagnosed with liver cancer and that in the same year, 578 000 men and 253 000 women in association with liver cancer. For men, liver cancer mortality is only surpassed by lung cancer mortality.
 For women on the other hand, liver cancer only takes sixth place in terms of total deaths, with sex-specific tumours like breast and uterus cancer accounting for more deaths.  
-For Germany, the most recent data available describes new cases and mortality in 2017. In this year, 6040 men and 2903 women were diagnosed with liver cancer and 5213 men and 2697 women died in association with liver cancer.
+For Germany, the most recent data available describes new cases and mortality in 2017. In this year, 6040 men and 2903 women were diagnosed with liver cancer and 5213 men and 2697 women of the cancer deaths were associated with liver cancer.
 
 ### Risk factors 
 
@@ -189,15 +189,14 @@ Our implementation of the kNN algorithm was split into two functions, one comput
 #' @param weights A vector specifying weights for the variables
 #' @return The distances of specified node to all other nodes
 #' @examples
-#' distances(df, id=3, vars=c(1,2,3), weights=c(1.25, 2, 1.5))
-
-distances <- function(df, id, vars, weights=rep.int(1,length(vars))) {
-  distance_to_id <- numeric(length(df[,1]))
-  for(v in vars) {
-    for(i in (1:length(distance_to_id))) {
-        rng <- range(df[,v])
-        distance_to_id[i] = distance_to_id[i] + 
-          (abs(df[i,v]-df[id,v])/(rng[2]-rng[1]))*weights[which(vars==v)]
+#' distances(df, id = 3, vars = c(1, 2, 3), weights = c(1.25, 2, 1.5))
+distances <- function(df, id, vars, weights = rep.int(1, length(vars))) {
+  distance_to_id <- numeric(length(df[, 1]))
+  for (v in vars) {
+    for (i in (1:length(distance_to_id))) {
+      rng <- range(df[, v])
+      distance_to_id[i] <- distance_to_id[i] +
+        (abs(df[i, v] - df[id, v]) / (rng[2] - rng[1])) * weights[which(vars == v)]
     }
   }
   return(distance_to_id)
@@ -209,12 +208,12 @@ distances <- function(df, id, vars, weights=rep.int(1,length(vars))) {
 #' @param vars A vector specifying variables to be considered (by columns)
 #' @param k Number of nearest neighbours to be found
 #' @param weights A vector specifying weights for the variables
-#' @examples 
-#' knn(df, id=3, vars=c(1,2,3), k=3, weights=c(1.25, 2, 1.5))
-knn <- function(df, id, vars, k, weights=rep.int(1,length(vars))) {
+#' @examples
+#' knn(df, id = 3, vars = c(1, 2, 3), k = 3, weights = c(1.25, 2, 1.5))
+knn <- function(df, id, vars, k, weights = rep.int(1, length(vars))) {
   distances_to_id <- distances(df, id, vars, weights)
-  df_with_distances <- data.frame(cbind(df, distances_to_id), ordered_id=(1:length(distances_to_id)))
-  df_with_distances <- filter(df_with_distances, ordered_id !=id)
+  df_with_distances <- data.frame(cbind(df, distances_to_id), ordered_id = (1:length(distances_to_id)))
+  df_with_distances <- filter(df_with_distances, ordered_id != id)
   df_with_distances <- arrange(df_with_distances, df_with_distances$distances_to_id)
   return(df_with_distances$ordered_id[1:k])
 }
@@ -262,15 +261,39 @@ After applying our approach, we ended up with 166 alive, 76 dead and 58 censored
  * papeR (version 1.0-5, 2021-03-19)
  * dplyr (version 1.0.5)
 
+# App Implementation
+
+Throughout our project we went through different phases and reworked our design and structure several times. We used multiple libraries in our application.
+These are:
+
+ * shiny (version 1.6.0)
+ * tidyverse (version 1.3.1)
+ * ggplot2 (version 3.3.3)
+ * survminer (version 0.4.9)
+ * gmodels (version 2.18.1)
+ * knitr (version 1.28)
+ * plotly (version 4.9.4.1)
+ * gt (version 0.3.0)
+ * papeR (version 1.0-5)
+ * shinythemes (version 1.2.0)
+ * survival (version 3.1-12)
+
+We decided right away that we want to set up our application with the _navbarPage_ Layout, combined with tab panels. For visual reasons we decided to include a dark _shinytheme_. During the project we implemented six tabs in total. In the first one called _About App_, the team members and the GitHub link is displayed. In the second tab _About liver cancer_, one can find some information about our chosen type of cancer, implemented through an R Markdown file. The third one is called _Dataset_, where an interactive table of our manipulated dataset is displayed. The fourth one is called _Graphs_ and shows a Scatterplot, a Boxplot and a Histogram, all of which were implemented to be fully interactive. Our fifth tab _Tables_, contains a summary, frequency, risk and confidence interval table, all four were implemented completely interactive as well. The sixth and last tab consists of two parts. In the first part we implemented a Kaplan-Meier-Curve and in the second part an interactive plot, which displays the simulated variable for the given patient Id, both selected by the user.  
+Firstly, we went for fluid rows and columns in the _Graphs_ and _Tables_ tabs, but later decided that a sidebar Layout would suit the app better, look cleaner as well as enabling larger plot outputs. We chose a global file to load all our libraries needed, as well as all the required checkbox and drop-down menu items and referenced it as a source in the _Server_ file. We did so to create a cleaner view and make the code more structured as well as to have a central place for all those chunks of code and save code duplications.  
+For our information tab about our chosen type of cancer, we managed to include an R-Markdown file and referenced it in the _ui_ file, also for the aforementioned purposes.  
+To keep our structural integrity, we decided to implement the _server_ file wherever possible with _reactives_. On one hand this was done to keep the clean structure and on the other hand to increase the performance of our interactive elements, as they now only reload and recalculate in case of a change in specific input, instead of every time any change on that respective tab is made.  
+The aforementioned libraries were used on different outputs for graphs and tables. For instance the scatterplot was implemented with the _plotly_ output to enable zooming in and out as well as other features for the user.  
+The _gt_ package was used to create the frequency and risk tables. Both mostly for reasons of labeling and proper visualisation as the package grants the option of customising according to our preferences. The usage of the _survival_ and the _survminer_ packages was needed in order to implement our additional Survival Analysis content, as explained in the following section _Problems and Solutions_. 
+All our plots were created with the _ggplot2_ package from the _tidyverse_. Only their output varies as mentioned above. 
+
 # Problems and Solutions
 
-During coding, we encountered many issues. Most of these issues were related to our table and plot outputs. Most prominently, our risk table did not work as we would have wanted it to. As our risk table was supposed to not only display a contingency table, but also compute risks, odds, risk difference, relative risk and odds ratio estimates, we were unable to use basic R functions. To solve this problem, we used the _gt_ package (see Implementation) which allowed us to customise table output and most importantly assign labels to rows and columns. 
+During coding, we encountered many issues. Most of these issues were related to our table and plot outputs. Most prominently, our risk table did not work as we would have wanted it to. As our risk table was supposed to not only display a contingency table, but also compute risks, odds, risk difference, relative risk and odds ratio estimates, we were unable to use basic R functions. To solve this problem, we used the _gt_ package (see App Implementation) which allowed us to customise table output and most importantly assign labels to rows and columns. 
 Another problem that we encountered had to do with variable labels in plot outputs. As some of our variable names were not perfectly intuitive (e.g. _alc_, _bili_, _hbv_), we wanted to assign labels to these variables for improved readability. To do this, we had to use package _papeR_'s (see Dataset Manipulation) _labels_ function to assign and retrieve variable labels. 
 In our dataset tab, we had some trouble with implementing the "Select all" checkbox. Our plan was that this checkbox should be set to false (unchecked) if a variable gets deselected. This worked, but the deselected variable gets reselected immediately afterwards and the according checkbox has to be clicked once more. The issue can be circumvented by deselecting "Select all" first and then deselecting variables. 
-When implementing our additional Survival Analysis content, we ran into multiple issues with the simulated datasets and plot output. Our used package _survminer_ (see Implementation) required the dataset to be arranged in a specific way in order to draw the Kaplan-Meier-curve. _ggsurvplot_, the function used to draw the curve, requires a fit, an object consisting of patient survival time and information about occurrence of events. For this, we had to create a new dataframe including information about the aforementioned variables.  
+When implementing our additional Survival Analysis content, we ran into multiple issues with the simulated datasets and plot output. Our used package _survminer_ (see App Implementation) required the dataset to be arranged in a specific way in order to draw the Kaplan-Meier-curve. _ggsurvplot_, the function used to draw the curve, requires a fit, an object consisting of patient survival time and information about occurrence of events. For this, we had to create a new dataframe including information about the aforementioned variables.  
 Plot output of the survival curve did not work at first because we had incompatible output types in our server and ui scripts. Adjusting the output types accordingly fixed this problem.
 Another issue we noticed after our presentation was the fact that simulated tumour size had not been removed accordingly for dead or censored patients after their respective event. As the presentation had already been held at this point in time, we could no longer fix this issue.
-
 
 # Conclusion and Lessons Learned
 
@@ -284,7 +307,7 @@ As our team worked via the version control system Git, additional experience in 
 
 ## Lars Andersen
 
-
+The whole project was programmed and thought out as a team, except some minor excpetions at the end of the project. In the last phase of the project I was responsible for adding and implementing an R Markdown file, containing the information about our chosen cancer type as well as outsorcing our code which was used on multiple occacions in a global R script. Other minor tasks were script cleaning and displaying the boxplot grouping variable by colour in the plot.
 
 ## Morten Dreher
 
@@ -302,5 +325,24 @@ To make the Shiny App more pleasant to look at, I could get creative and was res
 
  * https://pubmed.ncbi.nlm.nih.gov/20563664/
  * https://www.cdc.gov/tobacco/data_statistics/fact_sheets/youth_data/tobacco_use/
+ * https://bookdown.org/yihui/rmarkdown/
+ * https://shiny.rstudio.com/articles/reactivity-overview.html
+ * https://style.tidyverse.org/
+ * https://gt.rstudio.com/
+ * https://plotly.com/r/
  
 # Appendix
+
+```{r, echo=FALSE, out.width="100%"}
+include_graphics("img/overview.png")
+```
+```{r, echo=FALSE, out.width="50%"}
+include_graphics(path=c("img/aboutLiverCancer.png", "img/tables.png"))
+include_graphics(path=c("img/graphs1.png", "img/graphs2.png"))
+```
+```{r, echo=FALSE, out.width="100%"}
+include_graphics("img/graphs3.png")
+```
+```{r, echo=FALSE, out.width="100%"}
+include_graphics(path=c("img/survivalAnalysis.png", "img/survivalAnalysis2.png"))
+```
