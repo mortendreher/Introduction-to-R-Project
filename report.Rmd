@@ -1,7 +1,7 @@
 ---
 title: "Introduction To R And Shiny Apps - Project report"
 author: "Melita Coneva, Lars Andersen, Morten Dreher"
-date: "30/06/2021"
+date: "19/07/2021"
 output:
   pdf_document: 
     toc: true
@@ -41,7 +41,7 @@ According to the WHO, liver cancer caused 830 000 deaths worldwide in 2020 and i
 In most sources, liver cancer prevalence, incidence and mortality for men is about 2-3 times as high as it is for women.
 WHO data estimates that in 2020, 632 000 men and 273 000 women were diagnosed with liver cancer and that in the same year, 578 000 men and 253 000 women in association with liver cancer. For men, liver cancer mortality is only surpassed by lung cancer mortality.
 For women on the other hand, liver cancer only takes sixth place in terms of total deaths, with sex-specific tumours like breast and uterus cancer accounting for more deaths.  
-For Germany, the most recent data available describes new cases and mortality in 2017. In this year, 6040 men and 2903 women were diagnosed with liver cancer and 5213 men and 2697 women of the cancer deaths were associated with liver cancer.
+For Germany, the most recent data available describes new cases and mortality in 2017. In this year, 6040 men and 2903 women were diagnosed with liver cancer and 5213 men and 2697 women died in association with liver cancer.
 
 ### Risk factors 
 
@@ -281,6 +281,7 @@ These are:
 
 We decided right away that we want to set up our application with the _navbarPage_ Layout, combined with tab panels. For visual reasons we decided to include a dark _shinytheme_. During the project we implemented six tabs in total. In the first one called _About App_, the team members and the GitHub link is displayed. In the second tab _About liver cancer_, one can find some information about our chosen type of cancer, implemented through an R Markdown file. The third one is called _Dataset_, where an interactive table of our manipulated dataset is displayed. The fourth one is called _Graphs_ and shows a Scatterplot, a Boxplot and a Histogram, all of which were implemented to be fully interactive. Our fifth tab _Tables_, contains a summary, frequency, risk and confidence interval table, all four were implemented completely interactive as well. The sixth and last tab consists of two parts. In the first part we implemented a Kaplan-Meier-Curve and in the second part an interactive plot, which displays the simulated variable for the given patient Id, both selected by the user.  
 Firstly, we went for fluid rows and columns in the _Graphs_ and _Tables_ tabs, but later decided that a sidebar Layout would suit the app better, look cleaner as well as enabling larger plot outputs. We chose a global file to load all our libraries needed, as well as all the required checkbox and drop-down menu items and referenced it as a source in the _Server_ file. We did so to create a cleaner view and make the code more structured as well as to have a central place for all those chunks of code and save code duplications.  
+To implement user interactivity, we chose to use selectinputs for our graphs and tables as well as checkboxes for our dataset tab. In order to avoid outputs without meaningful content, we limited selectable input options. For instance scatterplot does not make sense for non-metric variables.  
 For our information tab about our chosen type of cancer, we managed to include an R-Markdown file and referenced it in the _ui_ file, also for the aforementioned purposes.  
 To keep our structural integrity, we decided to implement the _server_ file wherever possible with _reactives_. On one hand this was done to keep the clean structure and on the other hand to increase the performance of our interactive elements, as they now only reload and recalculate in case of a change in specific input, instead of every time any change on that respective tab is made.  
 The aforementioned libraries were used on different outputs for graphs and tables. For instance the scatterplot was implemented with the _plotly_ output to enable zooming in and out as well as other features for the user.  
@@ -323,7 +324,6 @@ Other minor changes included fixing plot labels, correcting BMI computation and 
 
 To make the Shiny App more pleasant to look at, I could get creative and was responsible for the design. This included changing the theme for the navbarPage and the graphs, adding icons to the TabPanels and minor colour changes in our graphs.
 
-
 # Sources 
 
  * https://pubmed.ncbi.nlm.nih.gov/20563664/
@@ -333,6 +333,7 @@ To make the Shiny App more pleasant to look at, I could get creative and was res
  * https://style.tidyverse.org/
  * https://gt.rstudio.com/
  * https://plotly.com/r/
+ * http://rpkgs.datanovia.com/survminer/reference/ggsurvplot.html
  
 \pagebreak
 
